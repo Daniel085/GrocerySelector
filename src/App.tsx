@@ -50,7 +50,10 @@ function App() {
     for (let i = 0; i < mealsWithImages.meals.length; i++) {
       const meal = mealsWithImages.meals[i];
       try {
-        setGenerationStep(`🎨 Generating image ${i + 1}/5: "${meal.name}"...`);
+        setGenerationStep(`🎨 Image ${i + 1}/5: Crafting prompt for "${meal.name}"...`);
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        setGenerationStep(`📸 Image ${i + 1}/5: SDXL-Turbo processing food photography...`);
 
         // Create a detailed prompt for the image
         const imagePrompt = `professional food photography, ${meal.name}, plated dish, appetizing, high quality, restaurant style`;
@@ -58,11 +61,13 @@ function App() {
         const imageUrl = await sdState.generateImage(imagePrompt);
         if (imageUrl) {
           mealsWithImages.meals[i] = { ...meal, imageUrl };
-          setGenerationStep(`✓ Image ${i + 1}/5 complete!`);
+          setGenerationStep(`✅ Image ${i + 1}/5: "${meal.name}" complete!`);
+          await new Promise(resolve => setTimeout(resolve, 300));
         }
       } catch (err) {
         console.error(`Failed to generate image for ${meal.name}:`, err);
-        setGenerationStep(`⚠ Image ${i + 1}/5 failed, continuing...`);
+        setGenerationStep(`⚠️ Image ${i + 1}/5 failed, continuing...`);
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
 
@@ -79,26 +84,48 @@ function App() {
     setMealPlan(null);
     setGroceryList([]);
 
+    // Helper to show progress with slight delay for visibility
+    const showProgress = async (message: string, delayMs: number = 300) => {
+      setGenerationStep(message);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+    };
+
     try {
-      setGenerationStep('🤖 Sending request to AI model...');
+      await showProgress(`🎯 Preparing ${selectedTheme} cuisine meal plan request...`);
       const prompt = generateMealPlanPrompt(selectedTheme);
 
-      setGenerationStep('🧠 AI is thinking and generating 5-day meal plan...');
+      await showProgress('📤 Sending prompt to Phi-3-mini language model...');
+      await showProgress('🧠 AI analyzing cuisine requirements and constraints...');
+      await showProgress('🔍 Scanning knowledge base for recipes and techniques...');
+      await showProgress('💭 Generating Day 1 meal with base ingredients...');
+      await showProgress('🔄 Optimizing Days 2-5 for ingredient reuse...');
+      await showProgress('⚖️ Balancing nutritional variety across all meals...');
+      await showProgress('👨‍🍳 Crafting cooking instructions for each recipe...');
+
       const response = await generate(prompt);
 
-      setGenerationStep('📋 Parsing meal plan and ingredients...');
+      await showProgress('✅ AI response received! Processing meal plan...');
+      await showProgress('📋 Extracting meal names and descriptions...');
+      await showProgress('🥕 Parsing ingredient lists for all 5 days...');
+      await showProgress('📝 Organizing cooking instructions...');
+
       const parsed = parseMealPlan(response, selectedTheme);
 
       if (parsed) {
-        setGenerationStep('🛒 Analyzing ingredient reuse and creating grocery list...');
+        await showProgress('🛒 Analyzing ingredient overlap across meals...');
+        await showProgress('📊 Calculating optimal shopping quantities...');
+        await showProgress('🏪 Generating consolidated grocery list...');
+
         const groceries = generateGroceryList(parsed);
+
+        await showProgress('🎨 Finalizing meal plan presentation...');
 
         // Generate images if enabled
         const mealsWithImages = await generateImagesForMeals(parsed);
 
         setMealPlan(mealsWithImages);
         setGroceryList(groceries);
-        setGenerationStep('✅ Complete!');
+        setGenerationStep('✅ Complete! Your personalized meal plan is ready!');
         setTimeout(() => setGenerationStep(''), 2000);
       } else {
         setGenerationError('Failed to parse meal plan. Please try again.');

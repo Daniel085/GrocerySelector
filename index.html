@@ -4,10 +4,29 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>groceryselector</title>
+    <meta name="description" content="AI-powered meal planning with smart ingredient reuse" />
+    <title>Grocery Selector - AI Meal Planner</title>
+    <style>
+      #root:empty::before {
+        content: "Loading Grocery Selector...";
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        font-family: system-ui, -apple-system, sans-serif;
+        font-size: 1.5rem;
+        color: #4F46E5;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <noscript>
+      <div style="text-align: center; padding: 2rem; font-family: system-ui;">
+        <h1>JavaScript Required</h1>
+        <p>This app requires JavaScript to run. Please enable JavaScript in your browser.</p>
+      </div>
+    </noscript>
   </body>
 </html>

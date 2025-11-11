@@ -21,13 +21,20 @@ export function useWebLLM() {
   useEffect(() => {
     // Check for WebGPU support
     const checkWebGPU = async () => {
-      if ('gpu' in navigator) {
-        try {
-          const adapter = await (navigator as any).gpu.requestAdapter();
-          setState(prev => ({ ...prev, hasWebGPU: !!adapter }));
-        } catch {
+      try {
+        if ('gpu' in navigator) {
+          try {
+            const adapter = await (navigator as any).gpu.requestAdapter();
+            setState(prev => ({ ...prev, hasWebGPU: !!adapter }));
+          } catch {
+            setState(prev => ({ ...prev, hasWebGPU: false }));
+          }
+        } else {
           setState(prev => ({ ...prev, hasWebGPU: false }));
         }
+      } catch (error) {
+        console.error('WebGPU check failed:', error);
+        setState(prev => ({ ...prev, hasWebGPU: false }));
       }
     };
     checkWebGPU();

@@ -255,6 +255,19 @@ function App() {
                 <p className="text-base text-[#264653] font-bold" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>✓ Image generation ready!</p>
               </div>
             )}
+            {enableImages && sdState.error && (
+              <div className="mt-4 p-4 bg-[#E76F51] rounded-xl border-3 border-[#DB6B4B]">
+                <p className="text-base text-white font-semibold mb-2" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
+                  ⚠️ Image Generation Error
+                </p>
+                <p className="text-sm text-white" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
+                  {sdState.error}
+                </p>
+                <p className="text-sm text-white mt-2" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
+                  Meal planning will continue without images.
+                </p>
+              </div>
+            )}
             {error && (
               <div className="mt-4 p-4 bg-[#E76F51] rounded-xl border-3 border-[#DB6B4B]">
                 <p className="text-base text-white font-semibold" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>{error}</p>

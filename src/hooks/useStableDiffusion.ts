@@ -104,7 +104,17 @@ export function useStableDiffusion() {
 
           if (ctx) {
             const imageData = ctx.createImageData(canvas.width, canvas.height);
-            imageData.data.set(output.images[0].data);
+            const rgbData = output.images[0].data;
+
+            // Convert RGB to RGBA by adding alpha channel
+            // RawImage provides RGB (3 channels), but ImageData expects RGBA (4 channels)
+            for (let i = 0, j = 0; i < rgbData.length; i += 3, j += 4) {
+              imageData.data[j] = rgbData[i];         // R
+              imageData.data[j + 1] = rgbData[i + 1]; // G
+              imageData.data[j + 2] = rgbData[i + 2]; // B
+              imageData.data[j + 3] = 255;            // A (fully opaque)
+            }
+
             ctx.putImageData(imageData, 0, 0);
             const dataUrl = canvas.toDataURL('image/png');
             console.log('[StableDiffusion] Image converted successfully, data URL length:', dataUrl.length);

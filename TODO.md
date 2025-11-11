@@ -77,11 +77,15 @@ Enable users to automatically add generated grocery lists to their Walmart cart 
 
 ## Other Future Features
 
-### Recipe Images (In Progress)
-- ✅ Stable Diffusion integration
-- ✅ SDXL-Turbo model
-- 🔄 Debugging image generation issues
-- ⏳ Improve image quality and consistency
+### Recipe Images
+- ❌ **Not feasible with current browser libraries**
+- **Issue**: Transformers.js doesn't support text-to-image pipelines
+- **Attempted**: Stable Diffusion via Transformers.js (failed - unsupported pipeline type)
+- **Alternative options to explore**:
+  - Use Unsplash API for food photography placeholders
+  - Fallback to emoji or SVG illustrations
+  - Wait for WebGPU-based Stable Diffusion implementations
+  - Use external image generation API (requires backend)
 
 ### User Preferences
 - Dietary restrictions (vegetarian, vegan, gluten-free, etc.)

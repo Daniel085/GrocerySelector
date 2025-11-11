@@ -15,7 +15,7 @@ function App() {
   const [groceryList, setGroceryList] = useState<GroceryItem[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
-  const [enableImages, setEnableImages] = useState(false);
+  const [enableImages] = useState(false); // Disabled: Transformers.js doesn't support text-to-image
   const [generatingImages, setGeneratingImages] = useState(false);
   const [generationStep, setGenerationStep] = useState<string>('');
   const [browserInfo, setBrowserInfo] = useState<string>('');
@@ -242,17 +242,11 @@ function App() {
                 <p className="text-sm text-gray-400 mb-4">
                   💡 Demo Mode: Watch the AI work in real-time with detailed progress messages
                 </p>
-                <label className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={enableImages}
-                    onChange={(e) => setEnableImages(e.target.checked)}
-                    className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500"
-                  />
-                  <span className="text-base text-gray-700">
-                    Enable AI-generated recipe images (experimental, +500MB download)
-                  </span>
-                </label>
+                <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                  <p className="text-sm text-amber-800">
+                    <strong>Note:</strong> AI image generation is currently unavailable. Transformers.js doesn't support text-to-image pipelines in the browser yet. We're exploring alternative solutions.
+                  </p>
+                </div>
               </div>
               <button
                 onClick={initialize}
@@ -268,19 +262,6 @@ function App() {
                 <p className="text-sm text-blue-600 mt-3">
                   📥 Downloading Phi-3-mini language model (3.8B parameters) - This happens once and is cached
                 </p>
-              </div>
-            )}
-            {enableImages && sdState.isLoading && (
-              <div className="mt-4 p-4 bg-purple-50 rounded border border-purple-200">
-                <ProgressBar progress={sdState.progress} />
-                <p className="text-sm text-purple-600 mt-3">
-                  📷 Loading Stable Diffusion SDXL-Turbo (~500MB) for image generation
-                </p>
-              </div>
-            )}
-            {enableImages && sdState.isInitialized && (
-              <div className="mt-4 p-4 bg-green-50 rounded border border-green-200">
-                <p className="text-base text-green-800">✓ Image generation ready!</p>
               </div>
             )}
             {error && (
@@ -490,7 +471,7 @@ function App() {
         {/* Footer */}
         <footer className="mt-16 text-center text-gray-500 text-base">
           <p className="mb-2">
-            Powered by <span className="font-medium text-gray-700">WebLLM</span> & <span className="font-medium text-gray-700">Stable Diffusion</span>
+            Powered by <span className="font-medium text-gray-700">WebLLM (Phi-3-mini)</span>
           </p>
           <p className="text-sm">All AI processing happens locally in your browser - No data sent to servers</p>
         </footer>

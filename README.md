@@ -6,6 +6,7 @@ An AI-powered meal planning web app that generates 5-day dinner plans with smart
 
 - **100% In-Browser AI** - No backend, no API keys, complete privacy
 - **Smart Meal Planning** - Generates 5-day meal plans based on cuisine themes
+- **AI-Generated Recipe Images** - Optional Stable Diffusion image generation for each meal (experimental)
 - **Ingredient Optimization** - Maximizes ingredient reuse across meals to reduce costs
 - **WebGPU Support** - Fast generation on capable devices, falls back to CPU/WASM
 - **Grocery List Export** - Automatically generates shopping lists with Walmart-compatible format
@@ -13,8 +14,10 @@ An AI-powered meal planning web app that generates 5-day dinner plans with smart
 ## How It Works
 
 1. **Initialize the AI** - Downloads ~2GB Phi-2 model (cached after first use)
+   - Optionally enable AI-generated recipe images (+500MB Stable Diffusion model)
 2. **Choose a Theme** - Pick from Italian, Mexican, Asian, Mediterranean, American, or Indian
 3. **Generate Meals** - AI creates 5 dinner meals optimized for ingredient reuse
+   - If images are enabled, beautiful recipe photos are generated for each meal
 4. **Get Your List** - Copy the grocery list for Walmart.com shopping
 
 ## Tech Stack
@@ -22,14 +25,16 @@ An AI-powered meal planning web app that generates 5-day dinner plans with smart
 - **React + TypeScript** - Modern UI framework
 - **Vite** - Lightning-fast build tool
 - **WebLLM** - Browser-based LLM inference with WebGPU/WASM
+- **Transformers.js** - Browser-based Stable Diffusion for image generation
 - **Tailwind CSS** - Utility-first styling
 - **Phi-2** - 2.7B parameter language model
+- **SDXL-Turbo** - Fast text-to-image model (optional)
 
 ## Browser Requirements
 
 - **Best experience:** Chrome/Edge 113+, Safari 18+ (WebGPU support)
 - **Works on:** Any modern browser (falls back to CPU)
-- **Note:** First load requires ~2GB download
+- **Note:** First load requires ~2GB download (~2.5GB with image generation enabled)
 
 ## Getting Started
 
@@ -50,6 +55,13 @@ npm run build
 - **WebGPU** (GPU): 5-15 seconds per meal plan
 - **CPU/WASM**: 30-60 seconds per meal plan
 
+### AI-Generated Recipe Images (Experimental)
+- Enable the checkbox during initialization to add beautiful AI-generated images to each meal
+- Requires additional ~500MB model download (one-time, cached)
+- Image generation adds 2-5 minutes to total processing time (5 images total)
+- Uses SDXL-Turbo for fast, high-quality food photography-style images
+- Completely optional - meal planning works great without images
+
 ### Walmart Integration
 The app generates a formatted grocery list. To use it:
 1. Click "Copy List" button
@@ -63,7 +75,8 @@ The app generates a formatted grocery list. To use it:
 ```
 src/
 ├── hooks/
-│   └── useWebLLM.ts          # WebLLM integration hook
+│   ├── useWebLLM.ts          # WebLLM integration hook
+│   └── useStableDiffusion.ts # Stable Diffusion image generation hook
 ├── utils/
 │   ├── mealParser.ts         # Parse LLM responses & aggregate groceries
 │   └── prompts.ts            # Prompt templates for meal generation
@@ -73,19 +86,21 @@ src/
 
 ## Limitations
 
-- First load requires ~2GB model download
-- Generation time varies by hardware (10-60 seconds)
+- First load requires ~2GB model download (~2.5GB with images)
+- Generation time varies by hardware (10-60 seconds for meals, +2-5 minutes for images)
 - No direct Walmart API integration (manual cart filling)
 - Ingredient quantity aggregation is simplified (MVP)
+- Image generation is experimental and may occasionally produce unexpected results
 
 ## Future Enhancements
 
 - [ ] Browser extension for Walmart auto-fill
 - [ ] Multiple model options (smaller/faster or larger/better)
 - [ ] User preferences (dietary restrictions, serving sizes)
-- [ ] Recipe images using Stable Diffusion (browser-based)
+- [x] Recipe images using Stable Diffusion (browser-based) ✨ **NEW!**
 - [ ] Save/share meal plans
 - [ ] Price estimation using Walmart API
+- [ ] Improve image generation quality and consistency
 
 ## Privacy
 

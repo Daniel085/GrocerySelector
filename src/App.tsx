@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useWebLLM } from './hooks/useWebLLM';
+import { useStableDiffusion } from './hooks/useStableDiffusion';
 import { CUISINE_THEMES } from './types';
 import type { CuisineTheme, MealPlan, GroceryItem } from './types';
 import { generateMealPlanPrompt } from './utils/prompts';
@@ -7,11 +8,47 @@ import { parseMealPlan, generateGroceryList, exportGroceryListAsText } from './u
 
 function App() {
   const { engine, isLoading, error, progress, hasWebGPU, initialize, generate } = useWebLLM();
+  const sdState = useStableDiffusion();
   const [selectedTheme, setSelectedTheme] = useState<CuisineTheme | null>(null);
   const [mealPlan, setMealPlan] = useState<MealPlan | null>(null);
   const [groceryList, setGroceryList] = useState<GroceryItem[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
+  const [enableImages, setEnableImages] = useState(false);
+  const [generatingImages, setGeneratingImages] = useState(false);
+
+  // Initialize Stable Diffusion when enabled
+  useEffect(() => {
+    if (enableImages && !sdState.isInitialized && !sdState.isLoading && engine) {
+      sdState.initialize();
+    }
+  }, [enableImages, sdState, engine]);
+
+  const generateImagesForMeals = async (meals: MealPlan) => {
+    if (!enableImages || !sdState.isInitialized) return meals;
+
+    setGeneratingImages(true);
+
+    const mealsWithImages = { ...meals };
+
+    for (let i = 0; i < mealsWithImages.meals.length; i++) {
+      const meal = mealsWithImages.meals[i];
+      try {
+        // Create a detailed prompt for the image
+        const imagePrompt = `professional food photography, ${meal.name}, plated dish, appetizing, high quality, restaurant style`;
+
+        const imageUrl = await sdState.generateImage(imagePrompt);
+        if (imageUrl) {
+          mealsWithImages.meals[i] = { ...meal, imageUrl };
+        }
+      } catch (err) {
+        console.error(`Failed to generate image for ${meal.name}:`, err);
+      }
+    }
+
+    setGeneratingImages(false);
+    return mealsWithImages;
+  };
 
   const handleGenerateMeals = async () => {
     if (!selectedTheme || !engine) return;
@@ -27,8 +64,10 @@ function App() {
 
       const parsed = parseMealPlan(response, selectedTheme);
       if (parsed) {
-        setMealPlan(parsed);
-        const groceries = generateGroceryList(parsed);
+        // Generate images if enabled
+        const mealsWithImages = await generateImagesForMeals(parsed);
+        setMealPlan(mealsWithImages);
+        const groceries = generateGroceryList(mealsWithImages);
         setGroceryList(groceries);
       } else {
         setGenerationError('Failed to parse meal plan. Please try again.');
@@ -62,7 +101,7 @@ function App() {
         {!engine && (
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
             <div className="flex items-center justify-between">
-              <div>
+              <div className="flex-1">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-2">
                   Getting Started
                 </h2>
@@ -77,9 +116,20 @@ function App() {
                     </span>
                   )}
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 mb-3">
                   First-time setup: ~2GB model download (cached after first use)
                 </p>
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={enableImages}
+                    onChange={(e) => setEnableImages(e.target.checked)}
+                    className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
+                  />
+                  <span className="text-sm text-gray-700">
+                    Enable AI-generated recipe images (experimental, +500MB download)
+                  </span>
+                </label>
               </div>
               <button
                 onClick={initialize}
@@ -92,6 +142,16 @@ function App() {
             {isLoading && (
               <div className="mt-4 p-4 bg-blue-50 rounded border border-blue-200">
                 <p className="text-sm text-blue-800">{progress}</p>
+              </div>
+            )}
+            {enableImages && sdState.isLoading && (
+              <div className="mt-4 p-4 bg-purple-50 rounded border border-purple-200">
+                <p className="text-sm text-purple-800">📷 {sdState.progress}</p>
+              </div>
+            )}
+            {enableImages && sdState.isInitialized && (
+              <div className="mt-4 p-4 bg-green-50 rounded border border-green-200">
+                <p className="text-sm text-green-800">✓ Image generation ready!</p>
               </div>
             )}
             {error && (
@@ -170,12 +230,28 @@ function App() {
                 </button>
               </div>
 
+              {generatingImages && (
+                <div className="mb-6 p-4 bg-purple-50 rounded border border-purple-200">
+                  <p className="text-sm text-purple-800">
+                    🎨 Generating recipe images... This may take a few minutes.
+                  </p>
+                </div>
+              )}
               <div className="space-y-6">
                 {mealPlan.meals.map((meal) => (
                   <div key={meal.day} className="border-l-4 border-indigo-500 pl-6 py-4">
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">
+                    <h3 className="text-xl font-bold text-gray-800 mb-3">
                       Day {meal.day}: {meal.name}
                     </h3>
+                    {meal.imageUrl && (
+                      <div className="mb-4">
+                        <img
+                          src={meal.imageUrl}
+                          alt={meal.name}
+                          className="w-full max-w-md rounded-lg shadow-md"
+                        />
+                      </div>
+                    )}
                     <div className="mb-3">
                       <h4 className="font-semibold text-gray-700 mb-1">Ingredients:</h4>
                       <ul className="list-disc list-inside text-gray-600 space-y-1">

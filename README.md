@@ -2,6 +2,12 @@
 
 An AI-powered meal planning web app that generates 5-day dinner plans with smart ingredient reuse to minimize grocery costs. Runs entirely in your browser using WebLLM.
 
+## 🚀 Live Demo
+
+**[Try it now!](https://daniel085.github.io/GrocerySelector/)**
+
+> Note: First load will download ~2GB of AI models (cached for future visits)
+
 ## Features
 
 - **100% In-Browser AI** - No backend, no API keys, complete privacy
@@ -48,6 +54,27 @@ npm run dev
 # Build for production
 npm run build
 ```
+
+## Deployment
+
+### GitHub Pages (Automatic)
+
+This project is configured for automatic deployment to GitHub Pages via GitHub Actions.
+
+**Setup:**
+1. Go to your repository Settings → Pages
+2. Under "Source", select **GitHub Actions**
+3. Push to the `main` branch to trigger automatic deployment
+4. Your app will be live at: `https://[username].github.io/GrocerySelector/`
+
+### Manual Deployment
+
+```bash
+# Deploy to GitHub Pages manually
+npm run deploy
+```
+
+This will build the project and push it to the `gh-pages` branch.
 
 ## Usage Tips
 

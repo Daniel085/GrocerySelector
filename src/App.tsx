@@ -16,6 +16,21 @@ function App() {
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [enableImages, setEnableImages] = useState(false);
   const [generatingImages, setGeneratingImages] = useState(false);
+  const [generationStep, setGenerationStep] = useState<string>('');
+  const [browserInfo, setBrowserInfo] = useState<string>('');
+
+  // Detect browser and capabilities
+  useEffect(() => {
+    const ua = navigator.userAgent;
+    let browser = 'Unknown';
+    if (ua.includes('Chrome') && !ua.includes('Edg')) browser = 'Chrome';
+    else if (ua.includes('Safari') && !ua.includes('Chrome')) browser = 'Safari';
+    else if (ua.includes('Edg')) browser = 'Edge';
+    else if (ua.includes('Firefox')) browser = 'Firefox';
+
+    const isMobile = /iPhone|iPad|Android/i.test(ua);
+    setBrowserInfo(`${browser}${isMobile ? ' (Mobile)' : ''}`);
+  }, []);
 
   // Initialize Stable Diffusion when enabled
   useEffect(() => {
@@ -34,19 +49,24 @@ function App() {
     for (let i = 0; i < mealsWithImages.meals.length; i++) {
       const meal = mealsWithImages.meals[i];
       try {
+        setGenerationStep(`🎨 Generating image ${i + 1}/5: "${meal.name}"...`);
+
         // Create a detailed prompt for the image
         const imagePrompt = `professional food photography, ${meal.name}, plated dish, appetizing, high quality, restaurant style`;
 
         const imageUrl = await sdState.generateImage(imagePrompt);
         if (imageUrl) {
           mealsWithImages.meals[i] = { ...meal, imageUrl };
+          setGenerationStep(`✓ Image ${i + 1}/5 complete!`);
         }
       } catch (err) {
         console.error(`Failed to generate image for ${meal.name}:`, err);
+        setGenerationStep(`⚠ Image ${i + 1}/5 failed, continuing...`);
       }
     }
 
     setGeneratingImages(false);
+    setGenerationStep('');
     return mealsWithImages;
   };
 
@@ -59,16 +79,26 @@ function App() {
     setGroceryList([]);
 
     try {
+      setGenerationStep('🤖 Sending request to AI model...');
       const prompt = generateMealPlanPrompt(selectedTheme);
+
+      setGenerationStep('🧠 AI is thinking and generating 5-day meal plan...');
       const response = await generate(prompt);
 
+      setGenerationStep('📋 Parsing meal plan and ingredients...');
       const parsed = parseMealPlan(response, selectedTheme);
+
       if (parsed) {
+        setGenerationStep('🛒 Analyzing ingredient reuse and creating grocery list...');
+        const groceries = generateGroceryList(parsed);
+
         // Generate images if enabled
         const mealsWithImages = await generateImagesForMeals(parsed);
+
         setMealPlan(mealsWithImages);
-        const groceries = generateGroceryList(mealsWithImages);
         setGroceryList(groceries);
+        setGenerationStep('✅ Complete!');
+        setTimeout(() => setGenerationStep(''), 2000);
       } else {
         setGenerationError('Failed to parse meal plan. Please try again.');
       }
@@ -95,6 +125,11 @@ function App() {
           <p className="text-lg text-gray-600">
             AI-powered 5-day meal planning with smart ingredient reuse
           </p>
+          {browserInfo && (
+            <p className="text-sm text-gray-500 mt-2">
+              Running on: {browserInfo} | All processing happens locally in your browser
+            </p>
+          )}
         </header>
 
         {/* WebGPU Status */}
@@ -116,8 +151,11 @@ function App() {
                     </span>
                   )}
                 </p>
-                <p className="text-sm text-gray-500 mb-3">
-                  First-time setup: ~2GB model download (cached after first use)
+                <p className="text-sm text-gray-500 mb-1">
+                  First-time setup: ~2GB Phi-2 model download (cached after first use)
+                </p>
+                <p className="text-xs text-gray-400 mb-3">
+                  💡 Demo Mode: Watch the AI work in real-time with detailed progress messages
                 </p>
                 <label className="flex items-center space-x-2 cursor-pointer">
                   <input
@@ -141,7 +179,10 @@ function App() {
             </div>
             {isLoading && (
               <div className="mt-4 p-4 bg-blue-50 rounded border border-blue-200">
-                <p className="text-sm text-blue-800">{progress}</p>
+                <p className="text-sm text-blue-800 font-mono">{progress}</p>
+                <p className="text-xs text-blue-600 mt-2">
+                  📥 Downloading Phi-2 language model (2.7B parameters) - This happens once and is cached
+                </p>
               </div>
             )}
             {enableImages && sdState.isLoading && (
@@ -162,12 +203,32 @@ function App() {
           </div>
         )}
 
-        {/* Theme Selection */}
+        {/* How It Works - Demo Info */}
         {engine && !mealPlan && (
-          <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-              Choose Your Cuisine Theme
-            </h2>
+          <>
+            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg shadow-sm p-6 mb-6 border border-indigo-200">
+              <h3 className="text-lg font-semibold text-indigo-900 mb-3">
+                🎯 How This Demo Works
+              </h3>
+              <div className="grid md:grid-cols-3 gap-4 text-sm">
+                <div>
+                  <p className="font-semibold text-indigo-800">1. Select Theme</p>
+                  <p className="text-gray-600">Pick a cuisine style for your meals</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-indigo-800">2. AI Generation</p>
+                  <p className="text-gray-600">Phi-2 creates 5 meals with ingredient reuse</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-indigo-800">3. Get Results</p>
+                  <p className="text-gray-600">View meals, recipes, and shopping list</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-lg shadow-md p-8 mb-8">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+                Choose Your Cuisine Theme
+              </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {CUISINE_THEMES.map((theme) => (
                 <button
@@ -196,9 +257,26 @@ function App() {
                   {isGenerating ? 'Generating Meals...' : 'Generate 5-Day Meal Plan'}
                 </button>
                 {isGenerating && (
-                  <p className="mt-4 text-gray-600">
-                    This may take 10-60 seconds depending on your hardware...
-                  </p>
+                  <div className="mt-4">
+                    <p className="text-gray-600 mb-2">
+                      This may take 10-60 seconds depending on your hardware...
+                    </p>
+                    {generationStep && (
+                      <div className="p-4 bg-indigo-50 rounded border border-indigo-200">
+                        <p className="text-sm text-indigo-800 font-mono">{generationStep}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {(generatingImages || (generationStep && !isGenerating)) && (
+                  <div className="mt-4 p-4 bg-purple-50 rounded border border-purple-200">
+                    <p className="text-sm text-purple-800 font-mono">{generationStep}</p>
+                    {generatingImages && (
+                      <p className="text-xs text-purple-600 mt-2">
+                        Stable Diffusion running... Each image takes 20-120 seconds
+                      </p>
+                    )}
+                  </div>
                 )}
                 {generationError && (
                   <div className="mt-4 p-4 bg-red-50 rounded border border-red-200">
@@ -208,6 +286,7 @@ function App() {
               </div>
             )}
           </div>
+          </>
         )}
 
         {/* Meal Plan Display */}

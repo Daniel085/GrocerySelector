@@ -5,7 +5,6 @@ import { CUISINE_THEMES } from './types';
 import type { CuisineTheme, MealPlan, GroceryItem } from './types';
 import { generateMealPlanPrompt } from './utils/prompts';
 import { parseMealPlan, generateGroceryList, exportGroceryListAsText } from './utils/mealParser';
-import { fetchRecipeImage } from './utils/imageService';
 
 function App() {
   const { engine, isLoading, error, progress, hasWebGPU, initialize, generate } = useWebLLM();
@@ -14,8 +13,6 @@ function App() {
   const [groceryList, setGroceryList] = useState<GroceryItem[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
-  const [enableImages, setEnableImages] = useState(false);
-  const [generatingImages, setGeneratingImages] = useState(false);
   const [generationStep, setGenerationStep] = useState<string>('');
   const [browserInfo, setBrowserInfo] = useState<string>('');
 
@@ -31,48 +28,6 @@ function App() {
     const isMobile = /iPhone|iPad|Android/i.test(ua);
     setBrowserInfo(`${browser}${isMobile ? ' (Mobile)' : ''}`);
   }, []);
-
-  const generateImagesForMeals = async (meals: MealPlan) => {
-    console.log('[ImageGeneration] Starting image fetching, enabled:', enableImages);
-
-    if (!enableImages) {
-      console.log('[ImageGeneration] Images not enabled, skipping');
-      return meals;
-    }
-
-    setGeneratingImages(true);
-    const mealsWithImages = { ...meals };
-
-    for (let i = 0; i < mealsWithImages.meals.length; i++) {
-      const meal = mealsWithImages.meals[i];
-      console.log(`[ImageGeneration] Fetching image ${i + 1}/5 for:`, meal.name);
-
-      try {
-        setGenerationStep(`📸 Image ${i + 1}/5: Searching for "${meal.name}" photo...`);
-
-        const imageUrl = await fetchRecipeImage(meal.name);
-        console.log(`[ImageGeneration] Received imageUrl:`, imageUrl);
-
-        if (imageUrl) {
-          mealsWithImages.meals[i] = { ...meal, imageUrl };
-          console.log(`[ImageGeneration] Image ${i + 1}/5 added to meal successfully`);
-          setGenerationStep(`✅ Image ${i + 1}/5: "${meal.name}" photo loaded!`);
-          await new Promise(resolve => setTimeout(resolve, 200));
-        } else {
-          console.warn(`[ImageGeneration] No image URL returned for meal ${i + 1}`);
-        }
-      } catch (err) {
-        console.error(`[ImageGeneration] Failed to fetch image for ${meal.name}:`, err);
-        setGenerationStep(`⚠️ Image ${i + 1}/5 failed, continuing...`);
-        await new Promise(resolve => setTimeout(resolve, 300));
-      }
-    }
-
-    console.log('[ImageGeneration] Completed all images, meals with images:', mealsWithImages);
-    setGeneratingImages(false);
-    setGenerationStep('');
-    return mealsWithImages;
-  };
 
   const handleGenerateMeals = async () => {
     if (!selectedTheme || !engine) return;
@@ -130,10 +85,7 @@ function App() {
 
         await showProgress('🎨 Finalizing meal plan presentation...');
 
-        // Generate images if enabled
-        const mealsWithImages = await generateImagesForMeals(parsed);
-
-        setMealPlan(mealsWithImages);
+        setMealPlan(parsed);
         setGroceryList(groceries);
         setGenerationStep('✅ Complete! Your personalized meal plan is ready!');
         setTimeout(() => setGenerationStep(''), 2000);
@@ -197,17 +149,6 @@ function App() {
                 <p className="text-sm text-gray-400 mb-4">
                   💡 Demo Mode: Watch the AI work in real-time with detailed progress messages
                 </p>
-                <label className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={enableImages}
-                    onChange={(e) => setEnableImages(e.target.checked)}
-                    className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500"
-                  />
-                  <span className="text-base text-gray-700">
-                    Enable recipe images from Unsplash (free food photography)
-                  </span>
-                </label>
               </div>
               <button
                 onClick={initialize}
@@ -298,16 +239,6 @@ function App() {
                     )}
                   </div>
                 )}
-                {(generatingImages || (generationStep && !isGenerating)) && (
-                  <div className="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
-                    <p className="text-base text-purple-800 font-mono leading-relaxed">{generationStep}</p>
-                    {generatingImages && (
-                      <p className="text-sm text-purple-600 mt-2">
-                        Fetching food photography from Foodish API...
-                      </p>
-                    )}
-                  </div>
-                )}
                 {generationError && (
                   <div className="mt-4 p-4 bg-red-50 rounded-lg border border-red-200">
                     <p className="text-base text-red-800">{generationError}</p>
@@ -339,28 +270,12 @@ function App() {
                 </button>
               </div>
 
-              {generatingImages && (
-                <div className="mb-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
-                  <p className="text-base text-purple-800">
-                    <span className="emoji">📸</span> Fetching recipe images...
-                  </p>
-                </div>
-              )}
               <div className="space-y-8">
                 {mealPlan.meals.map((meal) => (
                   <div key={meal.day} className="border-l-4 border-indigo-500 pl-6 py-2 hover:bg-gray-50 transition-colors rounded-r-lg">
                     <h3 className="text-3xl font-bold text-gray-800 mb-4">
                       Day {meal.day}: {meal.name}
                     </h3>
-                    {meal.imageUrl && (
-                      <div className="mb-5">
-                        <img
-                          src={meal.imageUrl}
-                          alt={meal.name}
-                          className="w-full max-w-md rounded-lg shadow-md"
-                        />
-                      </div>
-                    )}
                     <div className="mb-4">
                       <h4 className="font-semibold text-gray-700 mb-2 text-lg">Ingredients:</h4>
                       <ul className="list-disc list-inside text-gray-600 text-base space-y-1.5 ml-1">

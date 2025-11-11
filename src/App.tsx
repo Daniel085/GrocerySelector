@@ -174,14 +174,16 @@ function App() {
         {/* Header */}
         <header className="text-center mb-12">
           <h1 className="text-5xl font-bold text-gray-800 mb-3">
-            🍽️ Grocery Selector
+            <span className="emoji">🍽️</span> Grocery Selector
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             AI-powered 5-day meal planning with smart ingredient reuse
           </p>
           {browserInfo && (
-            <p className="text-sm text-gray-500 mt-2">
-              Running on: {browserInfo} | All processing happens locally in your browser
+            <p className="text-sm text-gray-500 mt-3">
+              Running on: <span className="font-medium">{browserInfo}</span>
+              <span className="mx-2">•</span>
+              All processing happens locally in your browser
             </p>
           )}
         </header>
@@ -263,41 +265,41 @@ function App() {
         {/* How It Works - Demo Info */}
         {engine && !mealPlan && (
           <>
-            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg shadow-sm p-6 mb-6 border border-indigo-200">
-              <h3 className="text-lg font-semibold text-indigo-900 mb-3">
-                🎯 How This Demo Works
+            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg shadow-sm p-6 mb-8 border border-indigo-200">
+              <h3 className="text-lg font-semibold text-indigo-900 mb-4 flex items-center gap-2">
+                <span className="emoji">🎯</span> How This Demo Works
               </h3>
-              <div className="grid md:grid-cols-3 gap-4 text-sm">
-                <div>
-                  <p className="font-semibold text-indigo-800">1. Select Theme</p>
+              <div className="grid md:grid-cols-3 gap-6 text-sm">
+                <div className="space-y-1">
+                  <p className="font-semibold text-indigo-800 text-base">1. Select Theme</p>
                   <p className="text-gray-600">Pick a cuisine style for your meals</p>
                 </div>
-                <div>
-                  <p className="font-semibold text-indigo-800">2. AI Generation</p>
+                <div className="space-y-1">
+                  <p className="font-semibold text-indigo-800 text-base">2. AI Generation</p>
                   <p className="text-gray-600">Phi-3-mini creates 5 meals with ingredient reuse</p>
                 </div>
-                <div>
-                  <p className="font-semibold text-indigo-800">3. Get Results</p>
+                <div className="space-y-1">
+                  <p className="font-semibold text-indigo-800 text-base">3. Get Results</p>
                   <p className="text-gray-600">View meals, recipes, and shopping list</p>
                 </div>
               </div>
             </div>
             <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-8 text-center">
                 Choose Your Cuisine Theme
               </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
               {CUISINE_THEMES.map((theme) => (
                 <button
                   key={theme.id}
                   onClick={() => setSelectedTheme(theme.id)}
-                  className={`p-6 rounded-lg border-2 transition-all ${
+                  className={`p-7 rounded-lg border-2 transition-all hover:scale-102 ${
                     selectedTheme === theme.id
                       ? 'border-indigo-600 bg-indigo-50 shadow-lg scale-105'
                       : 'border-gray-200 hover:border-indigo-300 hover:shadow-md'
                   }`}
                 >
-                  <div className="text-4xl mb-2">{theme.emoji}</div>
+                  <div className="text-5xl mb-3 emoji">{theme.emoji}</div>
                   <div className="text-lg font-semibold text-gray-800">
                     {theme.name}
                   </div>
@@ -309,25 +311,25 @@ function App() {
                 <button
                   onClick={handleGenerateMeals}
                   disabled={isGenerating}
-                  className="bg-indigo-600 text-white px-12 py-4 rounded-lg font-semibold text-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-lg"
+                  className="bg-indigo-600 text-white px-12 py-4 rounded-lg font-semibold text-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl active:scale-95"
                 >
                   {isGenerating ? 'Generating Meals...' : 'Generate 5-Day Meal Plan'}
                 </button>
                 {isGenerating && (
-                  <div className="mt-4">
-                    <p className="text-gray-600 mb-2">
+                  <div className="mt-6">
+                    <p className="text-gray-600 mb-3">
                       This may take 10-60 seconds depending on your hardware...
                     </p>
                     {generationStep && (
-                      <div className="p-4 bg-indigo-50 rounded border border-indigo-200">
-                        <p className="text-sm text-indigo-800 font-mono">{generationStep}</p>
+                      <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-200">
+                        <p className="text-sm text-indigo-800 font-mono leading-relaxed">{generationStep}</p>
                       </div>
                     )}
                   </div>
                 )}
                 {(generatingImages || (generationStep && !isGenerating)) && (
-                  <div className="mt-4 p-4 bg-purple-50 rounded border border-purple-200">
-                    <p className="text-sm text-purple-800 font-mono">{generationStep}</p>
+                  <div className="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
+                    <p className="text-sm text-purple-800 font-mono leading-relaxed">{generationStep}</p>
                     {generatingImages && (
                       <p className="text-xs text-purple-600 mt-2">
                         Stable Diffusion running... Each image takes 20-120 seconds
@@ -336,7 +338,7 @@ function App() {
                   </div>
                 )}
                 {generationError && (
-                  <div className="mt-4 p-4 bg-red-50 rounded border border-red-200">
+                  <div className="mt-4 p-4 bg-red-50 rounded-lg border border-red-200">
                     <p className="text-sm text-red-800">{generationError}</p>
                   </div>
                 )}
@@ -350,7 +352,7 @@ function App() {
         {mealPlan && (
           <>
             <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
                 <h2 className="text-3xl font-bold text-gray-800">
                   Your {mealPlan.theme.charAt(0).toUpperCase() + mealPlan.theme.slice(1)} Meal Plan
                 </h2>
@@ -360,27 +362,27 @@ function App() {
                     setGroceryList([]);
                     setSelectedTheme(null);
                   }}
-                  className="text-indigo-600 hover:text-indigo-800 font-medium"
+                  className="px-6 py-2 rounded-lg bg-gray-100 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-800 font-medium transition-all"
                 >
                   Start Over
                 </button>
               </div>
 
               {generatingImages && (
-                <div className="mb-6 p-4 bg-purple-50 rounded border border-purple-200">
+                <div className="mb-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
                   <p className="text-sm text-purple-800">
-                    🎨 Generating recipe images... This may take a few minutes.
+                    <span className="emoji">🎨</span> Generating recipe images... This may take a few minutes.
                   </p>
                 </div>
               )}
-              <div className="space-y-6">
+              <div className="space-y-8">
                 {mealPlan.meals.map((meal) => (
-                  <div key={meal.day} className="border-l-4 border-indigo-500 pl-6 py-4">
-                    <h3 className="text-xl font-bold text-gray-800 mb-3">
+                  <div key={meal.day} className="border-l-4 border-indigo-500 pl-6 py-2 hover:bg-gray-50 transition-colors rounded-r-lg">
+                    <h3 className="text-2xl font-bold text-gray-800 mb-4">
                       Day {meal.day}: {meal.name}
                     </h3>
                     {meal.imageUrl && (
-                      <div className="mb-4">
+                      <div className="mb-5">
                         <img
                           src={meal.imageUrl}
                           alt={meal.name}
@@ -388,18 +390,18 @@ function App() {
                         />
                       </div>
                     )}
-                    <div className="mb-3">
-                      <h4 className="font-semibold text-gray-700 mb-1">Ingredients:</h4>
-                      <ul className="list-disc list-inside text-gray-600 space-y-1">
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-gray-700 mb-2 text-base">Ingredients:</h4>
+                      <ul className="list-disc list-inside text-gray-600 space-y-1.5 ml-1">
                         {meal.ingredients.map((ing, idx) => (
-                          <li key={idx}>{ing}</li>
+                          <li key={idx} className="leading-relaxed">{ing}</li>
                         ))}
                       </ul>
                     </div>
                     {meal.instructions && (
                       <div>
-                        <h4 className="font-semibold text-gray-700 mb-1">Instructions:</h4>
-                        <p className="text-gray-600">{meal.instructions}</p>
+                        <h4 className="font-semibold text-gray-700 mb-2 text-base">Instructions:</h4>
+                        <p className="text-gray-600 leading-relaxed">{meal.instructions}</p>
                       </div>
                     )}
                   </div>
@@ -409,13 +411,13 @@ function App() {
 
             {/* Grocery List */}
             <div className="bg-white rounded-lg shadow-md p-8">
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
                 <h2 className="text-3xl font-bold text-gray-800">
-                  📋 Grocery List
+                  <span className="emoji">📋</span> Grocery List
                 </h2>
                 <button
                   onClick={handleCopyGroceryList}
-                  className="bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                  className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-all shadow-md hover:shadow-lg active:scale-95"
                 >
                   Copy List
                 </button>
@@ -426,15 +428,15 @@ function App() {
                   {groceryList.map((item, idx) => (
                     <div
                       key={idx}
-                      className="flex justify-between items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                      className="flex flex-wrap justify-between items-center gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                     >
-                      <div>
+                      <div className="flex-1 min-w-0">
                         <span className="font-semibold text-gray-800 capitalize">
                           {item.name}
                         </span>
                         <span className="text-gray-600 ml-2">- {item.quantity}</span>
                       </div>
-                      <span className="text-sm text-indigo-600 font-medium">
+                      <span className="text-sm text-indigo-600 font-medium whitespace-nowrap">
                         Day{item.usedInDays.length > 1 ? 's' : ''} {item.usedInDays.join(', ')}
                       </span>
                     </div>
@@ -447,8 +449,8 @@ function App() {
               )}
 
               <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-sm text-blue-800">
-                  <strong>💡 Walmart Shopping Tip:</strong> Copy this list and paste each item into
+                <p className="text-sm text-blue-800 leading-relaxed">
+                  <strong><span className="emoji">💡</span> Walmart Shopping Tip:</strong> Copy this list and paste each item into
                   Walmart.com's search to add to your cart, or save this list on your phone for in-store shopping.
                 </p>
               </div>
@@ -457,8 +459,11 @@ function App() {
         )}
 
         {/* Footer */}
-        <footer className="mt-12 text-center text-gray-600 text-sm">
-          <p>Powered by WebLLM - All processing happens in your browser</p>
+        <footer className="mt-16 text-center text-gray-500 text-sm">
+          <p className="mb-2">
+            Powered by <span className="font-medium text-gray-700">WebLLM</span> & <span className="font-medium text-gray-700">Stable Diffusion</span>
+          </p>
+          <p className="text-xs">All AI processing happens locally in your browser - No data sent to servers</p>
         </footer>
       </div>
     </div>

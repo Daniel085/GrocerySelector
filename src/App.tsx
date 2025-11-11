@@ -1,21 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useWebLLM } from './hooks/useWebLLM';
-import { useStableDiffusion } from './hooks/useStableDiffusion';
 import { ProgressBar } from './components/ProgressBar';
 import { CUISINE_THEMES } from './types';
 import type { CuisineTheme, MealPlan, GroceryItem } from './types';
 import { generateMealPlanPrompt } from './utils/prompts';
 import { parseMealPlan, generateGroceryList, exportGroceryListAsText } from './utils/mealParser';
+import { fetchRecipeImage } from './utils/imageService';
 
 function App() {
   const { engine, isLoading, error, progress, hasWebGPU, initialize, generate } = useWebLLM();
-  const sdState = useStableDiffusion();
   const [selectedTheme, setSelectedTheme] = useState<CuisineTheme | null>(null);
   const [mealPlan, setMealPlan] = useState<MealPlan | null>(null);
   const [groceryList, setGroceryList] = useState<GroceryItem[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
-  const [enableImages] = useState(false); // Disabled: Transformers.js doesn't support text-to-image
+  const [enableImages, setEnableImages] = useState(false);
   const [generatingImages, setGeneratingImages] = useState(false);
   const [generationStep, setGenerationStep] = useState<string>('');
   const [browserInfo, setBrowserInfo] = useState<string>('');
@@ -33,83 +32,39 @@ function App() {
     setBrowserInfo(`${browser}${isMobile ? ' (Mobile)' : ''}`);
   }, []);
 
-  // Initialize Stable Diffusion when enabled
-  useEffect(() => {
-    if (enableImages && !sdState.isInitialized && !sdState.isLoading && engine) {
-      console.log('[App] Initializing Stable Diffusion...');
-      sdState.initialize();
-    }
-  }, [enableImages, sdState.isInitialized, sdState.isLoading, sdState.initialize, engine]);
-
   const generateImagesForMeals = async (meals: MealPlan) => {
-    console.log('[ImageGeneration] Starting image generation, enabled:', enableImages, 'initialized:', sdState.isInitialized, 'loading:', sdState.isLoading);
+    console.log('[ImageGeneration] Starting image fetching, enabled:', enableImages);
 
     if (!enableImages) {
       console.log('[ImageGeneration] Images not enabled, skipping');
       return meals;
     }
 
-    // Wait for Stable Diffusion to initialize if it's currently loading
-    if (sdState.isLoading) {
-      console.log('[ImageGeneration] Stable Diffusion is loading, waiting...');
-      setGenerationStep('⏳ Waiting for Stable Diffusion to finish loading...');
-
-      // Poll until initialized or timeout after 60 seconds
-      const maxWaitTime = 60000; // 60 seconds
-      const startTime = Date.now();
-
-      while (!sdState.isInitialized && Date.now() - startTime < maxWaitTime) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        console.log('[ImageGeneration] Still waiting for SD initialization...');
-      }
-
-      if (!sdState.isInitialized) {
-        console.error('[ImageGeneration] Stable Diffusion initialization timeout');
-        setGenerationStep('');
-        return meals;
-      }
-
-      console.log('[ImageGeneration] Stable Diffusion initialization complete!');
-    }
-
-    if (!sdState.isInitialized) {
-      console.log('[ImageGeneration] Stable Diffusion not initialized, skipping image generation');
-      return meals;
-    }
-
     setGeneratingImages(true);
-
     const mealsWithImages = { ...meals };
 
     for (let i = 0; i < mealsWithImages.meals.length; i++) {
       const meal = mealsWithImages.meals[i];
-      console.log(`[ImageGeneration] Processing meal ${i + 1}/5:`, meal.name);
+      console.log(`[ImageGeneration] Fetching image ${i + 1}/5 for:`, meal.name);
 
       try {
-        setGenerationStep(`🎨 Image ${i + 1}/5: Crafting prompt for "${meal.name}"...`);
-        await new Promise(resolve => setTimeout(resolve, 200));
+        setGenerationStep(`📸 Image ${i + 1}/5: Searching for "${meal.name}" photo...`);
 
-        setGenerationStep(`📸 Image ${i + 1}/5: SDXL-Turbo processing food photography...`);
-
-        // Create a detailed prompt for the image
-        const imagePrompt = `professional food photography, ${meal.name}, plated dish, appetizing, high quality, restaurant style`;
-        console.log(`[ImageGeneration] Using prompt:`, imagePrompt);
-
-        const imageUrl = await sdState.generateImage(imagePrompt);
-        console.log(`[ImageGeneration] Received imageUrl:`, imageUrl ? `${imageUrl.substring(0, 50)}... (length: ${imageUrl.length})` : 'null');
+        const imageUrl = await fetchRecipeImage(meal.name);
+        console.log(`[ImageGeneration] Received imageUrl:`, imageUrl);
 
         if (imageUrl) {
           mealsWithImages.meals[i] = { ...meal, imageUrl };
           console.log(`[ImageGeneration] Image ${i + 1}/5 added to meal successfully`);
-          setGenerationStep(`✅ Image ${i + 1}/5: "${meal.name}" complete!`);
-          await new Promise(resolve => setTimeout(resolve, 300));
+          setGenerationStep(`✅ Image ${i + 1}/5: "${meal.name}" photo loaded!`);
+          await new Promise(resolve => setTimeout(resolve, 200));
         } else {
           console.warn(`[ImageGeneration] No image URL returned for meal ${i + 1}`);
         }
       } catch (err) {
-        console.error(`[ImageGeneration] Failed to generate image for ${meal.name}:`, err);
+        console.error(`[ImageGeneration] Failed to fetch image for ${meal.name}:`, err);
         setGenerationStep(`⚠️ Image ${i + 1}/5 failed, continuing...`);
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 300));
       }
     }
 
@@ -242,11 +197,17 @@ function App() {
                 <p className="text-sm text-gray-400 mb-4">
                   💡 Demo Mode: Watch the AI work in real-time with detailed progress messages
                 </p>
-                <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
-                  <p className="text-sm text-amber-800">
-                    <strong>Note:</strong> AI image generation is currently unavailable. Transformers.js doesn't support text-to-image pipelines in the browser yet. We're exploring alternative solutions.
-                  </p>
-                </div>
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={enableImages}
+                    onChange={(e) => setEnableImages(e.target.checked)}
+                    className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500"
+                  />
+                  <span className="text-base text-gray-700">
+                    Enable recipe images from Unsplash (free food photography)
+                  </span>
+                </label>
               </div>
               <button
                 onClick={initialize}
@@ -342,7 +303,7 @@ function App() {
                     <p className="text-base text-purple-800 font-mono leading-relaxed">{generationStep}</p>
                     {generatingImages && (
                       <p className="text-sm text-purple-600 mt-2">
-                        Stable Diffusion running... Each image takes 20-120 seconds
+                        Fetching food photography from Foodish API...
                       </p>
                     )}
                   </div>
@@ -381,7 +342,7 @@ function App() {
               {generatingImages && (
                 <div className="mb-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
                   <p className="text-base text-purple-800">
-                    <span className="emoji">🎨</span> Generating recipe images... This may take a few minutes.
+                    <span className="emoji">📸</span> Fetching recipe images...
                   </p>
                 </div>
               )}

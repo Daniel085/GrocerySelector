@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - claude/add-recipe-images-011CUziqD3anV7skaWtsoBmq
+      - claude/modern-retro-design-011CUziqD3anV7skaWtsoBmq
   workflow_dispatch:
 
 permissions:

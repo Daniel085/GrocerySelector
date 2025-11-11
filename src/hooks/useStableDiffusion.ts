@@ -65,11 +65,19 @@ export function useStableDiffusion() {
 
   const generateImage = useCallback(
     async (prompt: string): Promise<string | null> => {
+      console.log('[StableDiffusion] Starting image generation with prompt:', prompt);
+
       if (!pipelineRef.current) {
+        console.error('[StableDiffusion] Pipeline not initialized!');
         throw new Error('Stable Diffusion not initialized');
       }
 
       try {
+        console.log('[StableDiffusion] Pipeline ready, generating with settings:', {
+          steps: 2,
+          width: 512,
+          height: 512,
+        });
         setState(prev => ({ ...prev, progress: `Generating image...` }));
 
         // Generate image with optimized settings for speed
@@ -80,10 +88,14 @@ export function useStableDiffusion() {
           height: 512,
         });
 
+        console.log('[StableDiffusion] Generation complete, output:', output);
         setState(prev => ({ ...prev, progress: '' }));
 
         // Convert output to data URL
         if (output && output.images && output.images[0]) {
+          console.log('[StableDiffusion] Converting image to data URL, dimensions:',
+            output.images[0].width, 'x', output.images[0].height);
+
           // The output is a RawImage, convert to base64 data URL
           const canvas = document.createElement('canvas');
           canvas.width = output.images[0].width;
@@ -94,13 +106,27 @@ export function useStableDiffusion() {
             const imageData = ctx.createImageData(canvas.width, canvas.height);
             imageData.data.set(output.images[0].data);
             ctx.putImageData(imageData, 0, 0);
-            return canvas.toDataURL('image/png');
+            const dataUrl = canvas.toDataURL('image/png');
+            console.log('[StableDiffusion] Image converted successfully, data URL length:', dataUrl.length);
+            return dataUrl;
+          } else {
+            console.error('[StableDiffusion] Failed to get canvas 2d context');
           }
+        } else {
+          console.error('[StableDiffusion] Invalid output format:', {
+            hasOutput: !!output,
+            hasImages: !!(output && output.images),
+            imageCount: output?.images?.length
+          });
         }
 
         return null;
       } catch (error) {
-        console.error('Image generation failed:', error);
+        console.error('[StableDiffusion] Image generation failed:', error);
+        console.error('[StableDiffusion] Error details:', {
+          message: error instanceof Error ? error.message : 'Unknown error',
+          stack: error instanceof Error ? error.stack : undefined,
+        });
         setState(prev => ({
           ...prev,
           error: error instanceof Error ? error.message : 'Image generation failed',

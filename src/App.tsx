@@ -41,7 +41,12 @@ function App() {
   }, [enableImages, sdState, engine]);
 
   const generateImagesForMeals = async (meals: MealPlan) => {
-    if (!enableImages || !sdState.isInitialized) return meals;
+    console.log('[ImageGeneration] Starting image generation, enabled:', enableImages, 'initialized:', sdState.isInitialized);
+
+    if (!enableImages || !sdState.isInitialized) {
+      console.log('[ImageGeneration] Skipping image generation');
+      return meals;
+    }
 
     setGeneratingImages(true);
 
@@ -49,6 +54,8 @@ function App() {
 
     for (let i = 0; i < mealsWithImages.meals.length; i++) {
       const meal = mealsWithImages.meals[i];
+      console.log(`[ImageGeneration] Processing meal ${i + 1}/5:`, meal.name);
+
       try {
         setGenerationStep(`🎨 Image ${i + 1}/5: Crafting prompt for "${meal.name}"...`);
         await new Promise(resolve => setTimeout(resolve, 200));
@@ -57,20 +64,27 @@ function App() {
 
         // Create a detailed prompt for the image
         const imagePrompt = `professional food photography, ${meal.name}, plated dish, appetizing, high quality, restaurant style`;
+        console.log(`[ImageGeneration] Using prompt:`, imagePrompt);
 
         const imageUrl = await sdState.generateImage(imagePrompt);
+        console.log(`[ImageGeneration] Received imageUrl:`, imageUrl ? `${imageUrl.substring(0, 50)}... (length: ${imageUrl.length})` : 'null');
+
         if (imageUrl) {
           mealsWithImages.meals[i] = { ...meal, imageUrl };
+          console.log(`[ImageGeneration] Image ${i + 1}/5 added to meal successfully`);
           setGenerationStep(`✅ Image ${i + 1}/5: "${meal.name}" complete!`);
           await new Promise(resolve => setTimeout(resolve, 300));
+        } else {
+          console.warn(`[ImageGeneration] No image URL returned for meal ${i + 1}`);
         }
       } catch (err) {
-        console.error(`Failed to generate image for ${meal.name}:`, err);
+        console.error(`[ImageGeneration] Failed to generate image for ${meal.name}:`, err);
         setGenerationStep(`⚠️ Image ${i + 1}/5 failed, continuing...`);
         await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
 
+    console.log('[ImageGeneration] Completed all images, meals with images:', mealsWithImages);
     setGeneratingImages(false);
     setGenerationStep('');
     return mealsWithImages;
@@ -103,20 +117,32 @@ function App() {
       await showProgress('👨‍🍳 Crafting cooking instructions for each recipe...');
 
       const response = await generate(prompt);
+      console.log('[MealGeneration] AI response received, length:', response.length);
 
       await showProgress('✅ AI response received! Processing meal plan...');
       await showProgress('📋 Extracting meal names and descriptions...');
-      await showProgress('🥕 Parsing ingredient lists for all 5 days...');
-      await showProgress('📝 Organizing cooking instructions...');
 
       const parsed = parseMealPlan(response, selectedTheme);
+      console.log('[MealGeneration] Parsed meal plan:', parsed);
 
       if (parsed) {
+        // Show individual meals being extracted
+        for (let i = 0; i < parsed.meals.length; i++) {
+          const meal = parsed.meals[i];
+          await showProgress(`🍽️ Day ${meal.day}: Found "${meal.name}" with ${meal.ingredients.length} ingredients`, 200);
+          console.log(`[MealGeneration] Day ${meal.day}:`, {
+            name: meal.name,
+            ingredientCount: meal.ingredients.length,
+            ingredients: meal.ingredients,
+          });
+        }
+
         await showProgress('🛒 Analyzing ingredient overlap across meals...');
         await showProgress('📊 Calculating optimal shopping quantities...');
         await showProgress('🏪 Generating consolidated grocery list...');
 
         const groceries = generateGroceryList(parsed);
+        console.log('[MealGeneration] Generated grocery list:', groceries);
 
         await showProgress('🎨 Finalizing meal plan presentation...');
 

@@ -20,7 +20,7 @@ An AI-powered meal planning web app that generates 5-day dinner plans with smart
 
 ## How It Works
 
-1. **Initialize the AI** - Downloads ~2GB Phi-2 model (cached after first use)
+1. **Initialize the AI** - Downloads ~2GB Phi-3-mini model (cached after first use)
    - Optionally enable AI-generated recipe images (+500MB Stable Diffusion model)
 2. **Choose a Theme** - Pick from Italian, Mexican, Asian, Mediterranean, American, or Indian
 3. **Generate Meals** - AI creates 5 dinner meals optimized for ingredient reuse
@@ -34,7 +34,7 @@ An AI-powered meal planning web app that generates 5-day dinner plans with smart
 - **WebLLM** - Browser-based LLM inference with WebGPU/WASM
 - **Transformers.js** - Browser-based Stable Diffusion for image generation
 - **Tailwind CSS** - Utility-first styling
-- **Phi-2** - 2.7B parameter language model
+- **Phi-3-mini** - 3.8B parameter language model
 - **SDXL-Turbo** - Fast text-to-image model (optional)
 
 ## Browser Requirements

@@ -47,9 +47,9 @@ export function useWebLLM() {
 
     try {
       const engine = await webllm.CreateMLCEngine(
-        // Use Phi-2 for good balance of quality and speed
+        // Use Phi-3-mini for good balance of quality and speed
         // Falls back to CPU/WASM if WebGPU unavailable
-        'Phi-2-q4f16_1-MLC',
+        'Phi-3-mini-4k-instruct-q4f16_1-MLC',
         {
           initProgressCallback: (progress) => {
             setState(prev => ({ ...prev, progress: progress.text }));

@@ -152,7 +152,7 @@ function App() {
                   )}
                 </p>
                 <p className="text-sm text-gray-500 mb-1">
-                  First-time setup: ~2GB Phi-2 model download (cached after first use)
+                  First-time setup: ~2GB Phi-3-mini model download (cached after first use)
                 </p>
                 <p className="text-xs text-gray-400 mb-3">
                   💡 Demo Mode: Watch the AI work in real-time with detailed progress messages
@@ -181,7 +181,7 @@ function App() {
               <div className="mt-4 p-4 bg-blue-50 rounded border border-blue-200">
                 <p className="text-sm text-blue-800 font-mono">{progress}</p>
                 <p className="text-xs text-blue-600 mt-2">
-                  📥 Downloading Phi-2 language model (2.7B parameters) - This happens once and is cached
+                  📥 Downloading Phi-3-mini language model (3.8B parameters) - This happens once and is cached
                 </p>
               </div>
             )}
@@ -217,7 +217,7 @@ function App() {
                 </div>
                 <div>
                   <p className="font-semibold text-indigo-800">2. AI Generation</p>
-                  <p className="text-gray-600">Phi-2 creates 5 meals with ingredient reuse</p>
+                  <p className="text-gray-600">Phi-3-mini creates 5 meals with ingredient reuse</p>
                 </div>
                 <div>
                   <p className="font-semibold text-indigo-800">3. Get Results</p>

@@ -173,14 +173,14 @@ function App() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <header className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-gray-800 mb-3">
+          <h1 className="text-6xl md:text-7xl font-bold text-gray-800 mb-4">
             <span className="emoji">🍽️</span> Grocery Selector
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto">
             AI-powered 5-day meal planning with smart ingredient reuse
           </p>
           {browserInfo && (
-            <p className="text-sm text-gray-500 mt-3">
+            <p className="text-base text-gray-500 mt-4">
               Running on: <span className="font-medium">{browserInfo}</span>
               <span className="mx-2">•</span>
               All processing happens locally in your browser
@@ -193,10 +193,10 @@ function App() {
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+                <h2 className="text-3xl font-semibold text-gray-800 mb-3">
                   Getting Started
                 </h2>
-                <p className="text-gray-600 mb-2">
+                <p className="text-lg text-gray-600 mb-3">
                   {hasWebGPU ? (
                     <span className="text-green-600 font-medium">
                       ✓ WebGPU detected - Fast generation available!
@@ -207,20 +207,20 @@ function App() {
                     </span>
                   )}
                 </p>
-                <p className="text-sm text-gray-500 mb-1">
+                <p className="text-base text-gray-500 mb-2">
                   First-time setup: ~2GB Phi-3-mini model download (cached after first use)
                 </p>
-                <p className="text-xs text-gray-400 mb-3">
+                <p className="text-sm text-gray-400 mb-4">
                   💡 Demo Mode: Watch the AI work in real-time with detailed progress messages
                 </p>
-                <label className="flex items-center space-x-2 cursor-pointer">
+                <label className="flex items-center space-x-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={enableImages}
                     onChange={(e) => setEnableImages(e.target.checked)}
-                    className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
+                    className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500"
                   />
-                  <span className="text-sm text-gray-700">
+                  <span className="text-base text-gray-700">
                     Enable AI-generated recipe images (experimental, +500MB download)
                   </span>
                 </label>
@@ -228,7 +228,7 @@ function App() {
               <button
                 onClick={initialize}
                 disabled={isLoading}
-                className="bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                className="bg-indigo-600 text-white px-10 py-4 rounded-lg text-lg font-semibold hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
               >
                 {isLoading ? 'Loading Model...' : 'Initialize AI'}
               </button>
@@ -236,7 +236,7 @@ function App() {
             {isLoading && (
               <div className="mt-4 p-4 bg-blue-50 rounded border border-blue-200">
                 <ProgressBar progress={progress} />
-                <p className="text-xs text-blue-600 mt-3">
+                <p className="text-sm text-blue-600 mt-3">
                   📥 Downloading Phi-3-mini language model (3.8B parameters) - This happens once and is cached
                 </p>
               </div>
@@ -244,19 +244,19 @@ function App() {
             {enableImages && sdState.isLoading && (
               <div className="mt-4 p-4 bg-purple-50 rounded border border-purple-200">
                 <ProgressBar progress={sdState.progress} />
-                <p className="text-xs text-purple-600 mt-3">
+                <p className="text-sm text-purple-600 mt-3">
                   📷 Loading Stable Diffusion SDXL-Turbo (~500MB) for image generation
                 </p>
               </div>
             )}
             {enableImages && sdState.isInitialized && (
               <div className="mt-4 p-4 bg-green-50 rounded border border-green-200">
-                <p className="text-sm text-green-800">✓ Image generation ready!</p>
+                <p className="text-base text-green-800">✓ Image generation ready!</p>
               </div>
             )}
             {error && (
               <div className="mt-4 p-4 bg-red-50 rounded border border-red-200">
-                <p className="text-sm text-red-800">{error}</p>
+                <p className="text-base text-red-800">{error}</p>
               </div>
             )}
           </div>
@@ -266,26 +266,26 @@ function App() {
         {engine && !mealPlan && (
           <>
             <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg shadow-sm p-6 mb-8 border border-indigo-200">
-              <h3 className="text-lg font-semibold text-indigo-900 mb-4 flex items-center gap-2">
+              <h3 className="text-xl font-semibold text-indigo-900 mb-4 flex items-center gap-2">
                 <span className="emoji">🎯</span> How This Demo Works
               </h3>
-              <div className="grid md:grid-cols-3 gap-6 text-sm">
-                <div className="space-y-1">
-                  <p className="font-semibold text-indigo-800 text-base">1. Select Theme</p>
+              <div className="grid md:grid-cols-3 gap-6 text-base">
+                <div className="space-y-2">
+                  <p className="font-semibold text-indigo-800 text-lg">1. Select Theme</p>
                   <p className="text-gray-600">Pick a cuisine style for your meals</p>
                 </div>
-                <div className="space-y-1">
-                  <p className="font-semibold text-indigo-800 text-base">2. AI Generation</p>
+                <div className="space-y-2">
+                  <p className="font-semibold text-indigo-800 text-lg">2. AI Generation</p>
                   <p className="text-gray-600">Phi-3-mini creates 5 meals with ingredient reuse</p>
                 </div>
-                <div className="space-y-1">
-                  <p className="font-semibold text-indigo-800 text-base">3. Get Results</p>
+                <div className="space-y-2">
+                  <p className="font-semibold text-indigo-800 text-lg">3. Get Results</p>
                   <p className="text-gray-600">View meals, recipes, and shopping list</p>
                 </div>
               </div>
             </div>
             <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-8 text-center">
+              <h2 className="text-3xl font-semibold text-gray-800 mb-8 text-center">
                 Choose Your Cuisine Theme
               </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
@@ -299,8 +299,8 @@ function App() {
                       : 'border-gray-200 hover:border-indigo-300 hover:shadow-md'
                   }`}
                 >
-                  <div className="text-5xl mb-3 emoji">{theme.emoji}</div>
-                  <div className="text-lg font-semibold text-gray-800">
+                  <div className="text-6xl mb-3 emoji">{theme.emoji}</div>
+                  <div className="text-xl font-semibold text-gray-800">
                     {theme.name}
                   </div>
                 </button>
@@ -311,27 +311,27 @@ function App() {
                 <button
                   onClick={handleGenerateMeals}
                   disabled={isGenerating}
-                  className="bg-indigo-600 text-white px-12 py-4 rounded-lg font-semibold text-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl active:scale-95"
+                  className="bg-indigo-600 text-white px-14 py-5 rounded-lg font-semibold text-xl hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl active:scale-95"
                 >
                   {isGenerating ? 'Generating Meals...' : 'Generate 5-Day Meal Plan'}
                 </button>
                 {isGenerating && (
                   <div className="mt-6">
-                    <p className="text-gray-600 mb-3">
+                    <p className="text-lg text-gray-600 mb-3">
                       This may take 10-60 seconds depending on your hardware...
                     </p>
                     {generationStep && (
                       <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-200">
-                        <p className="text-sm text-indigo-800 font-mono leading-relaxed">{generationStep}</p>
+                        <p className="text-base text-indigo-800 font-mono leading-relaxed">{generationStep}</p>
                       </div>
                     )}
                   </div>
                 )}
                 {(generatingImages || (generationStep && !isGenerating)) && (
                   <div className="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
-                    <p className="text-sm text-purple-800 font-mono leading-relaxed">{generationStep}</p>
+                    <p className="text-base text-purple-800 font-mono leading-relaxed">{generationStep}</p>
                     {generatingImages && (
-                      <p className="text-xs text-purple-600 mt-2">
+                      <p className="text-sm text-purple-600 mt-2">
                         Stable Diffusion running... Each image takes 20-120 seconds
                       </p>
                     )}
@@ -339,7 +339,7 @@ function App() {
                 )}
                 {generationError && (
                   <div className="mt-4 p-4 bg-red-50 rounded-lg border border-red-200">
-                    <p className="text-sm text-red-800">{generationError}</p>
+                    <p className="text-base text-red-800">{generationError}</p>
                   </div>
                 )}
               </div>
@@ -353,7 +353,7 @@ function App() {
           <>
             <div className="bg-white rounded-lg shadow-md p-8 mb-8">
               <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
-                <h2 className="text-3xl font-bold text-gray-800">
+                <h2 className="text-4xl font-bold text-gray-800">
                   Your {mealPlan.theme.charAt(0).toUpperCase() + mealPlan.theme.slice(1)} Meal Plan
                 </h2>
                 <button
@@ -362,7 +362,7 @@ function App() {
                     setGroceryList([]);
                     setSelectedTheme(null);
                   }}
-                  className="px-6 py-2 rounded-lg bg-gray-100 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-800 font-medium transition-all"
+                  className="px-7 py-3 rounded-lg bg-gray-100 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-800 font-medium text-lg transition-all"
                 >
                   Start Over
                 </button>
@@ -370,7 +370,7 @@ function App() {
 
               {generatingImages && (
                 <div className="mb-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
-                  <p className="text-sm text-purple-800">
+                  <p className="text-base text-purple-800">
                     <span className="emoji">🎨</span> Generating recipe images... This may take a few minutes.
                   </p>
                 </div>
@@ -378,7 +378,7 @@ function App() {
               <div className="space-y-8">
                 {mealPlan.meals.map((meal) => (
                   <div key={meal.day} className="border-l-4 border-indigo-500 pl-6 py-2 hover:bg-gray-50 transition-colors rounded-r-lg">
-                    <h3 className="text-2xl font-bold text-gray-800 mb-4">
+                    <h3 className="text-3xl font-bold text-gray-800 mb-4">
                       Day {meal.day}: {meal.name}
                     </h3>
                     {meal.imageUrl && (
@@ -391,8 +391,8 @@ function App() {
                       </div>
                     )}
                     <div className="mb-4">
-                      <h4 className="font-semibold text-gray-700 mb-2 text-base">Ingredients:</h4>
-                      <ul className="list-disc list-inside text-gray-600 space-y-1.5 ml-1">
+                      <h4 className="font-semibold text-gray-700 mb-2 text-lg">Ingredients:</h4>
+                      <ul className="list-disc list-inside text-gray-600 text-base space-y-1.5 ml-1">
                         {meal.ingredients.map((ing, idx) => (
                           <li key={idx} className="leading-relaxed">{ing}</li>
                         ))}
@@ -400,8 +400,8 @@ function App() {
                     </div>
                     {meal.instructions && (
                       <div>
-                        <h4 className="font-semibold text-gray-700 mb-2 text-base">Instructions:</h4>
-                        <p className="text-gray-600 leading-relaxed">{meal.instructions}</p>
+                        <h4 className="font-semibold text-gray-700 mb-2 text-lg">Instructions:</h4>
+                        <p className="text-gray-600 text-base leading-relaxed">{meal.instructions}</p>
                       </div>
                     )}
                   </div>
@@ -412,12 +412,12 @@ function App() {
             {/* Grocery List */}
             <div className="bg-white rounded-lg shadow-md p-8">
               <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
-                <h2 className="text-3xl font-bold text-gray-800">
+                <h2 className="text-4xl font-bold text-gray-800">
                   <span className="emoji">📋</span> Grocery List
                 </h2>
                 <button
                   onClick={handleCopyGroceryList}
-                  className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-all shadow-md hover:shadow-lg active:scale-95"
+                  className="bg-green-600 text-white px-7 py-3 rounded-lg text-lg font-semibold hover:bg-green-700 transition-all shadow-md hover:shadow-lg active:scale-95"
                 >
                   Copy List
                 </button>
@@ -428,28 +428,28 @@ function App() {
                   {groceryList.map((item, idx) => (
                     <div
                       key={idx}
-                      className="flex flex-wrap justify-between items-center gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                      className="flex flex-wrap justify-between items-center gap-3 p-5 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                     >
                       <div className="flex-1 min-w-0">
-                        <span className="font-semibold text-gray-800 capitalize">
+                        <span className="font-semibold text-gray-800 capitalize text-lg">
                           {item.name}
                         </span>
-                        <span className="text-gray-600 ml-2">- {item.quantity}</span>
+                        <span className="text-gray-600 text-base ml-2">- {item.quantity}</span>
                       </div>
-                      <span className="text-sm text-indigo-600 font-medium whitespace-nowrap">
+                      <span className="text-base text-indigo-600 font-medium whitespace-nowrap">
                         Day{item.usedInDays.length > 1 ? 's' : ''} {item.usedInDays.join(', ')}
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500 text-center py-8">
+                <p className="text-gray-500 text-base text-center py-8">
                   No grocery items found. Try regenerating the meal plan.
                 </p>
               )}
 
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-sm text-blue-800 leading-relaxed">
+              <div className="mt-6 p-5 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-base text-blue-800 leading-relaxed">
                   <strong><span className="emoji">💡</span> Walmart Shopping Tip:</strong> Copy this list and paste each item into
                   Walmart.com's search to add to your cart, or save this list on your phone for in-store shopping.
                 </p>
@@ -459,11 +459,11 @@ function App() {
         )}
 
         {/* Footer */}
-        <footer className="mt-16 text-center text-gray-500 text-sm">
+        <footer className="mt-16 text-center text-gray-500 text-base">
           <p className="mb-2">
             Powered by <span className="font-medium text-gray-700">WebLLM</span> & <span className="font-medium text-gray-700">Stable Diffusion</span>
           </p>
-          <p className="text-xs">All AI processing happens locally in your browser - No data sent to servers</p>
+          <p className="text-sm">All AI processing happens locally in your browser - No data sent to servers</p>
         </footer>
       </div>
     </div>

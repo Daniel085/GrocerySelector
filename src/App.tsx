@@ -169,19 +169,19 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 py-8 px-4 retro-dots">
+    <div className="min-h-screen bg-gradient-to-br from-[#F4F1DE] via-[#A7C4BC] to-[#F4F1DE] py-8 px-4 retro-dots">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <header className="text-center mb-12 animate-bounce-in">
-          <h1 className="text-6xl md:text-7xl font-bold text-orange-900 mb-4 retro-text-shadow">
+          <h1 className="text-6xl md:text-7xl font-bold text-[#264653] mb-4 retro-text-shadow" style={{fontFamily: "'Century Gothic', 'Futura', 'Avenir', sans-serif"}}>
             <span className="emoji animate-wiggle inline-block">🍽️</span> Grocery Selector
           </h1>
-          <p className="text-xl md:text-2xl text-orange-800 max-w-3xl mx-auto font-semibold">
+          <p className="text-xl md:text-2xl text-[#264653] max-w-3xl mx-auto font-semibold" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
             AI-powered 5-day meal planning with smart ingredient reuse
           </p>
           {browserInfo && (
-            <p className="text-base text-amber-700 mt-4">
-              Running on: <span className="font-medium text-orange-900">{browserInfo}</span>
+            <p className="text-base text-[#8C8279] mt-4" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
+              Running on: <span className="font-medium text-[#264653]">{browserInfo}</span>
               <span className="mx-2">•</span>
               All processing happens locally in your browser
             </p>
@@ -193,24 +193,24 @@ function App() {
           <div className="retro-card p-6 mb-8 relative overflow-hidden retro-checkered">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <h2 className="text-3xl font-bold text-orange-900 mb-3 retro-text-shadow">
+                <h2 className="text-3xl font-bold text-[#264653] mb-3 retro-text-shadow" style={{fontFamily: "'Rockwell', 'Clarendon', serif"}}>
                   Getting Started
                 </h2>
-                <p className="text-lg text-orange-800 mb-3">
+                <p className="text-lg text-[#264653] mb-3" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
                   {hasWebGPU ? (
-                    <span className="text-green-700 font-bold">
+                    <span className="text-[#2A9D8F] font-bold">
                       ✓ WebGPU detected - Fast generation available!
                     </span>
                   ) : (
-                    <span className="text-amber-700 font-bold">
+                    <span className="text-[#E9C46A] font-bold">
                       ⚠️ WebGPU not available - Will use CPU (slower but works!)
                     </span>
                   )}
                 </p>
-                <p className="text-base text-amber-800 mb-2">
+                <p className="text-base text-[#8C8279] mb-2" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
                   First-time setup: ~2GB Phi-3-mini model download (cached after first use)
                 </p>
-                <p className="text-sm text-orange-700 mb-4">
+                <p className="text-sm text-[#264653] mb-4" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
                   💡 Demo Mode: Watch the AI work in real-time with detailed progress messages
                 </p>
                 <label className="flex items-center space-x-3 cursor-pointer">
@@ -218,9 +218,9 @@ function App() {
                     type="checkbox"
                     checked={enableImages}
                     onChange={(e) => setEnableImages(e.target.checked)}
-                    className="w-5 h-5 text-orange-600 rounded focus:ring-orange-500"
+                    className="w-5 h-5 text-[#2A9D8F] rounded focus:ring-[#2A9D8F]"
                   />
-                  <span className="text-base text-orange-900 font-medium">
+                  <span className="text-base text-[#264653] font-medium" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
                     Enable AI-generated recipe images (experimental, +500MB download)
                   </span>
                 </label>
@@ -228,35 +228,36 @@ function App() {
               <button
                 onClick={initialize}
                 disabled={isLoading}
-                className="retro-button bg-gradient-to-b from-orange-500 to-orange-600 text-white px-10 py-4 rounded-full text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                className="retro-button bg-gradient-to-b from-[#E76F51] to-[#DB6B4B] text-white px-10 py-4 rounded-full text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{fontFamily: "'Impact', 'Bebas Neue', sans-serif"}}
               >
                 {isLoading ? 'Loading Model...' : 'Initialize AI'}
               </button>
             </div>
             {isLoading && (
-              <div className="mt-4 p-4 bg-orange-100 rounded-xl border-3 border-orange-300">
+              <div className="mt-4 p-4 bg-[#A7C4BC] rounded-xl border-3 border-[#2A9D8F]">
                 <ProgressBar progress={progress} />
-                <p className="text-sm text-orange-900 mt-3 font-semibold">
+                <p className="text-sm text-[#264653] mt-3 font-semibold" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
                   📥 Downloading Phi-3-mini language model (3.8B parameters) - This happens once and is cached
                 </p>
               </div>
             )}
             {enableImages && sdState.isLoading && (
-              <div className="mt-4 p-4 bg-pink-100 rounded-xl border-3 border-pink-300">
+              <div className="mt-4 p-4 bg-[#E9C46A] rounded-xl border-3 border-[#E76F51]">
                 <ProgressBar progress={sdState.progress} />
-                <p className="text-sm text-pink-900 mt-3 font-semibold">
+                <p className="text-sm text-[#264653] mt-3 font-semibold" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
                   📷 Loading Stable Diffusion SDXL-Turbo (~500MB) for image generation
                 </p>
               </div>
             )}
             {enableImages && sdState.isInitialized && (
-              <div className="mt-4 p-4 bg-green-100 rounded-xl border-3 border-green-400">
-                <p className="text-base text-green-900 font-bold">✓ Image generation ready!</p>
+              <div className="mt-4 p-4 bg-[#A7C4BC] rounded-xl border-3 border-[#2A9D8F]">
+                <p className="text-base text-[#264653] font-bold" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>✓ Image generation ready!</p>
               </div>
             )}
             {error && (
-              <div className="mt-4 p-4 bg-red-100 rounded-xl border-3 border-red-400">
-                <p className="text-base text-red-900 font-semibold">{error}</p>
+              <div className="mt-4 p-4 bg-[#E76F51] rounded-xl border-3 border-[#DB6B4B]">
+                <p className="text-base text-white font-semibold" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>{error}</p>
               </div>
             )}
           </div>
@@ -265,28 +266,28 @@ function App() {
         {/* How It Works - Demo Info */}
         {engine && !mealPlan && (
           <>
-            <div className="bg-gradient-to-r from-yellow-100 via-orange-100 to-red-100 rounded-2xl shadow-lg p-6 mb-8 border-4 border-orange-400 retro-stripes">
-              <h3 className="text-2xl font-bold text-orange-900 mb-4 flex items-center gap-2 retro-text-shadow">
+            <div className="bg-gradient-to-r from-[#E9C46A] via-[#A7C4BC] to-[#E9C46A] rounded-2xl shadow-lg p-6 mb-8 border-4 border-[#2A9D8F] retro-stripes">
+              <h3 className="text-2xl font-bold text-[#264653] mb-4 flex items-center gap-2 retro-text-shadow" style={{fontFamily: "'Rockwell', 'Clarendon', serif"}}>
                 <span className="emoji">🎯</span> How This Demo Works
               </h3>
               <div className="grid md:grid-cols-3 gap-6 text-base">
-                <div className="space-y-2 bg-white/70 rounded-xl p-4 border-2 border-yellow-300">
-                  <p className="font-bold text-orange-900 text-lg">1. Select Theme</p>
-                  <p className="text-orange-800 font-medium">Pick a cuisine style for your meals</p>
+                <div className="space-y-2 bg-[#F4F1DE]/90 rounded-xl p-4 border-2 border-[#2A9D8F]">
+                  <p className="font-bold text-[#264653] text-lg" style={{fontFamily: "'Rockwell', 'Clarendon', serif"}}>1. Select Theme</p>
+                  <p className="text-[#264653] font-medium" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>Pick a cuisine style for your meals</p>
                 </div>
-                <div className="space-y-2 bg-white/70 rounded-xl p-4 border-2 border-orange-300">
-                  <p className="font-bold text-orange-900 text-lg">2. AI Generation</p>
-                  <p className="text-orange-800 font-medium">Phi-3-mini creates 5 meals with ingredient reuse</p>
+                <div className="space-y-2 bg-[#F4F1DE]/90 rounded-xl p-4 border-2 border-[#E76F51]">
+                  <p className="font-bold text-[#264653] text-lg" style={{fontFamily: "'Rockwell', 'Clarendon', serif"}}>2. AI Generation</p>
+                  <p className="text-[#264653] font-medium" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>Phi-3-mini creates 5 meals with ingredient reuse</p>
                 </div>
-                <div className="space-y-2 bg-white/70 rounded-xl p-4 border-2 border-red-300">
-                  <p className="font-bold text-orange-900 text-lg">3. Get Results</p>
-                  <p className="text-orange-800 font-medium">View meals, recipes, and shopping list</p>
+                <div className="space-y-2 bg-[#F4F1DE]/90 rounded-xl p-4 border-2 border-[#E9C46A]">
+                  <p className="font-bold text-[#264653] text-lg" style={{fontFamily: "'Rockwell', 'Clarendon', serif"}}>3. Get Results</p>
+                  <p className="text-[#264653] font-medium" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>View meals, recipes, and shopping list</p>
                 </div>
               </div>
             </div>
             <div className="retro-card p-8 mb-8 relative overflow-hidden">
               <div className="food-accent"></div>
-              <h2 className="text-4xl font-bold text-orange-900 mb-8 text-center retro-text-shadow">
+              <h2 className="text-4xl font-bold text-[#264653] mb-8 text-center retro-text-shadow" style={{fontFamily: "'Century Gothic', 'Futura', 'Avenir', sans-serif"}}>
                 Choose Your Cuisine Theme
               </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
@@ -296,12 +297,12 @@ function App() {
                   onClick={() => setSelectedTheme(theme.id)}
                   className={`p-7 rounded-2xl border-4 transition-all hover:scale-105 relative overflow-hidden ${
                     selectedTheme === theme.id
-                      ? 'border-orange-600 bg-gradient-to-br from-orange-100 to-yellow-100 shadow-xl scale-105 animate-pulse-warm'
-                      : 'border-orange-300 bg-gradient-to-br from-amber-50 to-orange-50 hover:border-orange-500 hover:shadow-lg'
+                      ? 'border-[#E76F51] bg-gradient-to-br from-[#E9C46A] to-[#A7C4BC] shadow-xl scale-105 animate-pulse-warm'
+                      : 'border-[#2A9D8F] bg-gradient-to-br from-[#F4F1DE] to-[#A7C4BC] hover:border-[#E76F51] hover:shadow-lg'
                   }`}
                 >
                   <div className="text-6xl mb-3 emoji animate-float">{theme.emoji}</div>
-                  <div className="text-xl font-bold text-orange-900">
+                  <div className="text-xl font-bold text-[#264653]" style={{fontFamily: "'Rockwell', 'Clarendon', serif"}}>
                     {theme.name}
                   </div>
                 </button>
@@ -312,35 +313,36 @@ function App() {
                 <button
                   onClick={handleGenerateMeals}
                   disabled={isGenerating}
-                  className="retro-button bg-gradient-to-b from-orange-500 to-orange-600 text-white px-14 py-5 rounded-full font-bold text-2xl disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="retro-button bg-gradient-to-b from-[#E76F51] to-[#DB6B4B] text-white px-14 py-5 rounded-full font-bold text-2xl disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{fontFamily: "'Impact', 'Bebas Neue', sans-serif"}}
                 >
                   {isGenerating ? 'Generating Meals...' : 'Generate 5-Day Meal Plan'}
                 </button>
                 {isGenerating && (
                   <div className="mt-6">
-                    <p className="text-lg text-orange-900 mb-3 font-semibold">
+                    <p className="text-lg text-[#264653] mb-3 font-semibold" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
                       This may take 10-60 seconds depending on your hardware...
                     </p>
                     {generationStep && (
-                      <div className="p-4 bg-orange-100 rounded-2xl border-3 border-orange-300">
-                        <p className="text-base text-orange-900 font-mono leading-relaxed font-semibold">{generationStep}</p>
+                      <div className="p-4 bg-[#A7C4BC] rounded-2xl border-3 border-[#2A9D8F]">
+                        <p className="text-base text-[#264653] font-mono leading-relaxed font-semibold">{generationStep}</p>
                       </div>
                     )}
                   </div>
                 )}
                 {(generatingImages || (generationStep && !isGenerating)) && (
-                  <div className="mt-4 p-4 bg-pink-100 rounded-2xl border-3 border-pink-300">
-                    <p className="text-base text-pink-900 font-mono leading-relaxed font-semibold">{generationStep}</p>
+                  <div className="mt-4 p-4 bg-[#E9C46A] rounded-2xl border-3 border-[#E76F51]">
+                    <p className="text-base text-[#264653] font-mono leading-relaxed font-semibold">{generationStep}</p>
                     {generatingImages && (
-                      <p className="text-sm text-pink-800 mt-2 font-medium">
+                      <p className="text-sm text-[#264653] mt-2 font-medium" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
                         Stable Diffusion running... Each image takes 20-120 seconds
                       </p>
                     )}
                   </div>
                 )}
                 {generationError && (
-                  <div className="mt-4 p-4 bg-red-100 rounded-2xl border-3 border-red-400">
-                    <p className="text-base text-red-900 font-semibold">{generationError}</p>
+                  <div className="mt-4 p-4 bg-[#E76F51] rounded-2xl border-3 border-[#DB6B4B]">
+                    <p className="text-base text-white font-semibold" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>{generationError}</p>
                   </div>
                 )}
               </div>
@@ -355,7 +357,7 @@ function App() {
             <div className="retro-card p-8 mb-8 relative overflow-hidden">
               <div className="food-accent"></div>
               <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
-                <h2 className="text-4xl font-bold text-orange-900 retro-text-shadow">
+                <h2 className="text-4xl font-bold text-[#264653] retro-text-shadow" style={{fontFamily: "'Century Gothic', 'Futura', 'Avenir', sans-serif"}}>
                   Your {mealPlan.theme.charAt(0).toUpperCase() + mealPlan.theme.slice(1)} Meal Plan
                 </h2>
                 <button
@@ -364,23 +366,24 @@ function App() {
                     setGroceryList([]);
                     setSelectedTheme(null);
                   }}
-                  className="px-7 py-3 rounded-full bg-gradient-to-b from-amber-400 to-orange-500 text-white hover:from-amber-500 hover:to-orange-600 font-bold text-lg transition-all border-3 border-orange-600"
+                  className="px-7 py-3 rounded-full bg-gradient-to-b from-[#E9C46A] to-[#E76F51] text-white hover:from-[#E76F51] hover:to-[#DB6B4B] font-bold text-lg transition-all border-3 border-[#264653]"
+                  style={{fontFamily: "'Impact', 'Bebas Neue', sans-serif"}}
                 >
                   Start Over
                 </button>
               </div>
 
               {generatingImages && (
-                <div className="mb-6 p-4 bg-pink-100 rounded-2xl border-3 border-pink-300">
-                  <p className="text-base text-pink-900 font-semibold">
+                <div className="mb-6 p-4 bg-[#E9C46A] rounded-2xl border-3 border-[#E76F51]">
+                  <p className="text-base text-[#264653] font-semibold" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
                     <span className="emoji">🎨</span> Generating recipe images... This may take a few minutes.
                   </p>
                 </div>
               )}
               <div className="space-y-8">
                 {mealPlan.meals.map((meal) => (
-                  <div key={meal.day} className="border-l-8 border-orange-500 pl-6 py-2 bg-gradient-to-r from-orange-50/50 to-transparent hover:from-orange-100/80 transition-colors rounded-r-2xl">
-                    <h3 className="text-3xl font-bold text-orange-900 mb-4">
+                  <div key={meal.day} className="border-l-8 border-[#E76F51] pl-6 py-2 bg-gradient-to-r from-[#A7C4BC]/30 to-transparent hover:from-[#A7C4BC]/50 transition-colors rounded-r-2xl">
+                    <h3 className="text-3xl font-bold text-[#264653] mb-4" style={{fontFamily: "'Rockwell', 'Clarendon', serif"}}>
                       Day {meal.day}: {meal.name}
                     </h3>
                     {meal.imageUrl && (
@@ -388,13 +391,13 @@ function App() {
                         <img
                           src={meal.imageUrl}
                           alt={meal.name}
-                          className="w-full max-w-md rounded-2xl shadow-lg border-4 border-orange-300"
+                          className="w-full max-w-md rounded-2xl shadow-lg border-4 border-[#2A9D8F]"
                         />
                       </div>
                     )}
                     <div className="mb-4">
-                      <h4 className="font-bold text-orange-900 mb-2 text-lg">Ingredients:</h4>
-                      <ul className="list-disc list-inside text-orange-800 text-base space-y-1.5 ml-1 font-medium">
+                      <h4 className="font-bold text-[#264653] mb-2 text-lg" style={{fontFamily: "'Rockwell', 'Clarendon', serif"}}>Ingredients:</h4>
+                      <ul className="list-disc list-inside text-[#264653] text-base space-y-1.5 ml-1 font-medium" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
                         {meal.ingredients.map((ing, idx) => (
                           <li key={idx} className="leading-relaxed">{ing}</li>
                         ))}
@@ -402,8 +405,8 @@ function App() {
                     </div>
                     {meal.instructions && (
                       <div>
-                        <h4 className="font-bold text-orange-900 mb-2 text-lg">Instructions:</h4>
-                        <p className="text-orange-800 text-base leading-relaxed font-medium">{meal.instructions}</p>
+                        <h4 className="font-bold text-[#264653] mb-2 text-lg" style={{fontFamily: "'Rockwell', 'Clarendon', serif"}}>Instructions:</h4>
+                        <p className="text-[#264653] text-base leading-relaxed font-medium" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>{meal.instructions}</p>
                       </div>
                     )}
                   </div>
@@ -415,12 +418,13 @@ function App() {
             <div className="retro-card p-8 relative overflow-hidden">
               <div className="food-accent"></div>
               <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
-                <h2 className="text-4xl font-bold text-orange-900 retro-text-shadow">
+                <h2 className="text-4xl font-bold text-[#264653] retro-text-shadow" style={{fontFamily: "'Century Gothic', 'Futura', 'Avenir', sans-serif"}}>
                   <span className="emoji">📋</span> Grocery List
                 </h2>
                 <button
                   onClick={handleCopyGroceryList}
-                  className="retro-button bg-gradient-to-b from-green-500 to-green-600 text-white px-7 py-3 rounded-full text-lg font-bold"
+                  className="retro-button bg-gradient-to-b from-[#2A9D8F] to-[#264653] text-white px-7 py-3 rounded-full text-lg font-bold"
+                  style={{fontFamily: "'Impact', 'Bebas Neue', sans-serif"}}
                 >
                   Copy List
                 </button>
@@ -431,28 +435,28 @@ function App() {
                   {groceryList.map((item, idx) => (
                     <div
                       key={idx}
-                      className="flex flex-wrap justify-between items-center gap-3 p-5 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl hover:from-amber-100 hover:to-orange-100 transition-colors border-2 border-orange-200 hover:border-orange-400"
+                      className="flex flex-wrap justify-between items-center gap-3 p-5 bg-gradient-to-r from-[#F4F1DE] to-[#A7C4BC] rounded-2xl hover:from-[#A7C4BC] hover:to-[#E9C46A] transition-colors border-2 border-[#2A9D8F] hover:border-[#E76F51]"
                     >
                       <div className="flex-1 min-w-0">
-                        <span className="font-bold text-orange-900 capitalize text-lg">
+                        <span className="font-bold text-[#264653] capitalize text-lg" style={{fontFamily: "'Rockwell', 'Clarendon', serif"}}>
                           {item.name}
                         </span>
-                        <span className="text-orange-800 text-base ml-2 font-medium">- {item.quantity}</span>
+                        <span className="text-[#264653] text-base ml-2 font-medium" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>- {item.quantity}</span>
                       </div>
-                      <span className="text-base text-orange-600 font-bold whitespace-nowrap bg-orange-200 px-3 py-1 rounded-full">
+                      <span className="text-base text-white font-bold whitespace-nowrap bg-[#E76F51] px-3 py-1 rounded-full" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
                         Day{item.usedInDays.length > 1 ? 's' : ''} {item.usedInDays.join(', ')}
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-orange-700 text-base text-center py-8 font-medium">
+                <p className="text-[#8C8279] text-base text-center py-8 font-medium" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
                   No grocery items found. Try regenerating the meal plan.
                 </p>
               )}
 
-              <div className="mt-6 p-5 bg-gradient-to-r from-yellow-100 to-amber-100 rounded-2xl border-3 border-yellow-400">
-                <p className="text-base text-amber-900 leading-relaxed font-medium">
+              <div className="mt-6 p-5 bg-gradient-to-r from-[#E9C46A] to-[#A7C4BC] rounded-2xl border-3 border-[#2A9D8F]">
+                <p className="text-base text-[#264653] leading-relaxed font-medium" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
                   <strong><span className="emoji">💡</span> Walmart Shopping Tip:</strong> Copy this list and paste each item into
                   Walmart.com's search to add to your cart, or save this list on your phone for in-store shopping.
                 </p>
@@ -462,9 +466,9 @@ function App() {
         )}
 
         {/* Footer */}
-        <footer className="mt-16 text-center text-amber-800 text-base">
+        <footer className="mt-16 text-center text-[#8C8279] text-base" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
           <p className="mb-2 font-semibold">
-            Powered by <span className="font-bold text-orange-900">WebLLM</span> & <span className="font-bold text-orange-900">Stable Diffusion</span>
+            Powered by <span className="font-bold text-[#264653]">WebLLM</span> & <span className="font-bold text-[#264653]">Stable Diffusion</span>
           </p>
           <p className="text-sm font-medium">All AI processing happens locally in your browser - No data sent to servers</p>
         </footer>

@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 @layer base {
-  /* Retro food-themed typography */
+  /* Mid-Century Modern typography */
   body {
-    font-family: "Segoe UI", "Helvetica Neue", Arial, "Comic Sans MS", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-family: "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     font-size: 16px;
-    background: linear-gradient(135deg, #fff5e6 0%, #ffe4cc 50%, #ffd4a3 100%);
+    background: linear-gradient(135deg, #F4F1DE 0%, #A7C4BC 50%, #F4F1DE 100%);
   }
 
   /* Better emoji rendering for Safari, Chrome, and Edge */
@@ -70,81 +70,90 @@
 
 @keyframes pulse-warm {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.7);
+    box-shadow: 0 0 0 0 rgba(231, 111, 81, 0.7);
   }
   50% {
-    box-shadow: 0 0 0 10px rgba(255, 107, 53, 0);
+    box-shadow: 0 0 0 10px rgba(231, 111, 81, 0);
   }
 }
 
-/* Retro checkered pattern background */
+/* Mid-Century atomic pattern background */
 .retro-checkered {
   background-image:
-    linear-gradient(45deg, rgba(255, 107, 53, 0.05) 25%, transparent 25%),
-    linear-gradient(-45deg, rgba(255, 107, 53, 0.05) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, rgba(255, 107, 53, 0.05) 75%),
-    linear-gradient(-45deg, transparent 75%, rgba(255, 107, 53, 0.05) 75%);
-  background-size: 20px 20px;
-  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    radial-gradient(circle at 20% 80%, rgba(42, 157, 143, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(233, 196, 106, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(231, 111, 81, 0.05) 0%, transparent 50%);
+  background-size: 80px 80px, 100px 100px, 60px 60px;
+  background-position: 0 0, 40px 40px, 20px 20px;
 }
 
-/* Retro polka dots */
+/* Mid-Century geometric dots */
 .retro-dots {
-  background-image: radial-gradient(circle, rgba(255, 183, 77, 0.15) 2px, transparent 2px);
-  background-size: 20px 20px;
+  background-image:
+    radial-gradient(circle, rgba(42, 157, 143, 0.12) 2px, transparent 2px),
+    radial-gradient(circle, rgba(233, 196, 106, 0.1) 1.5px, transparent 1.5px);
+  background-size: 30px 30px, 20px 20px;
+  background-position: 0 0, 15px 15px;
 }
 
-/* Retro striped pattern */
+/* Mid-Century sunburst stripes */
 .retro-stripes {
   background-image: repeating-linear-gradient(
     45deg,
     transparent,
-    transparent 10px,
-    rgba(255, 107, 53, 0.05) 10px,
-    rgba(255, 107, 53, 0.05) 20px
+    transparent 15px,
+    rgba(42, 157, 143, 0.06) 15px,
+    rgba(42, 157, 143, 0.06) 30px
+  ),
+  repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 15px,
+    rgba(233, 196, 106, 0.04) 15px,
+    rgba(233, 196, 106, 0.04) 30px
   );
 }
 
-/* Retro 3D button effect */
+/* Mid-Century Modern 3D button effect */
 .retro-button {
   position: relative;
   transition: all 0.2s ease;
-  box-shadow: 0 6px 0 #d64a2a, 0 8px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 0 #DB6B4B, 0 8px 15px rgba(38, 70, 83, 0.2);
 }
 
 .retro-button:hover {
   transform: translateY(2px);
-  box-shadow: 0 4px 0 #d64a2a, 0 6px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 0 #DB6B4B, 0 6px 12px rgba(38, 70, 83, 0.2);
 }
 
 .retro-button:active {
   transform: translateY(4px);
-  box-shadow: 0 2px 0 #d64a2a, 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 0 #DB6B4B, 0 4px 8px rgba(38, 70, 83, 0.15);
 }
 
-/* Retro card with vintage shadow */
+/* Mid-Century Modern card with offset shadow */
 .retro-card {
-  background: #fffef9;
+  background: #F4F1DE;
   border-radius: 20px;
   box-shadow:
-    8px 8px 0 rgba(255, 107, 53, 0.2),
-    0 10px 30px rgba(214, 74, 42, 0.15);
-  border: 3px solid #ff6b35;
+    8px 8px 0 rgba(42, 157, 143, 0.2),
+    0 10px 30px rgba(38, 70, 83, 0.15);
+  border: 3px solid #2A9D8F;
   transition: all 0.3s ease;
 }
 
 .retro-card:hover {
   transform: translateY(-5px) rotate(-1deg);
   box-shadow:
-    12px 12px 0 rgba(255, 107, 53, 0.3),
-    0 15px 40px rgba(214, 74, 42, 0.25);
+    12px 12px 0 rgba(42, 157, 143, 0.3),
+    0 15px 40px rgba(38, 70, 83, 0.25);
 }
 
-/* Vintage text shadow */
+/* Mid-Century text shadow */
 .retro-text-shadow {
   text-shadow:
-    3px 3px 0 rgba(255, 107, 53, 0.3),
-    6px 6px 10px rgba(0, 0, 0, 0.1);
+    3px 3px 0 rgba(42, 157, 143, 0.25),
+    6px 6px 10px rgba(38, 70, 83, 0.1);
 }
 
 /* Food-themed decorative elements */

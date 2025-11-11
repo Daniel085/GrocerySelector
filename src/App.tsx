@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useWebLLM } from './hooks/useWebLLM';
 import { useStableDiffusion } from './hooks/useStableDiffusion';
+import { ProgressBar } from './components/ProgressBar';
 import { CUISINE_THEMES } from './types';
 import type { CuisineTheme, MealPlan, GroceryItem } from './types';
 import { generateMealPlanPrompt } from './utils/prompts';
@@ -179,15 +180,18 @@ function App() {
             </div>
             {isLoading && (
               <div className="mt-4 p-4 bg-blue-50 rounded border border-blue-200">
-                <p className="text-sm text-blue-800 font-mono">{progress}</p>
-                <p className="text-xs text-blue-600 mt-2">
+                <ProgressBar progress={progress} />
+                <p className="text-xs text-blue-600 mt-3">
                   📥 Downloading Phi-3-mini language model (3.8B parameters) - This happens once and is cached
                 </p>
               </div>
             )}
             {enableImages && sdState.isLoading && (
               <div className="mt-4 p-4 bg-purple-50 rounded border border-purple-200">
-                <p className="text-sm text-purple-800">📷 {sdState.progress}</p>
+                <ProgressBar progress={sdState.progress} />
+                <p className="text-xs text-purple-600 mt-3">
+                  📷 Loading Stable Diffusion SDXL-Turbo (~500MB) for image generation
+                </p>
               </div>
             )}
             {enableImages && sdState.isInitialized && (

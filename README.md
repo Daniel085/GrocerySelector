@@ -7,6 +7,7 @@ An AI-powered meal planning web app that generates 5-day dinner plans with smart
 **[Try it now!](https://daniel085.github.io/GrocerySelector/)**
 
 > Note: First load will download ~2GB of AI models (cached for future visits)
+> **Status:** Demo deployment active
 
 ## Features
 

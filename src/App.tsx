@@ -172,9 +172,9 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-[#F4F1DE] via-[#A7C4BC] to-[#F4F1DE] py-8 px-4 retro-dots">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <header className="text-center mb-12 animate-bounce-in">
+        <header className="text-center mb-12">
           <h1 className="text-6xl md:text-7xl font-bold text-[#264653] mb-4 retro-text-shadow" style={{fontFamily: "'Century Gothic', 'Futura', 'Avenir', sans-serif"}}>
-            <span className="emoji animate-wiggle inline-block">🍽️</span> Grocery Selector
+            <span className="emoji inline-block">🍽️</span> Grocery Selector
           </h1>
           <p className="text-xl md:text-2xl text-[#264653] max-w-3xl mx-auto font-semibold" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
             AI-powered 5-day meal planning with smart ingredient reuse
@@ -301,7 +301,7 @@ function App() {
                       : 'border-[#2A9D8F] bg-gradient-to-br from-[#F4F1DE] to-[#A7C4BC] hover:border-[#E76F51] hover:shadow-lg'
                   }`}
                 >
-                  <div className="text-6xl mb-3 emoji animate-float">{theme.emoji}</div>
+                  <div className="text-6xl mb-3 emoji">{theme.emoji}</div>
                   <div className="text-xl font-bold text-[#264653]" style={{fontFamily: "'Rockwell', 'Clarendon', serif"}}>
                     {theme.name}
                   </div>

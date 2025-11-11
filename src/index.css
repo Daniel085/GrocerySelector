@@ -5,9 +5,12 @@
 @layer base {
   /* Mid-Century Modern typography */
   body {
-    font-family: "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-family: system-ui, "Segoe UI", "Helvetica Neue", "Tahoma", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     font-size: 16px;
     background: linear-gradient(135deg, #F4F1DE 0%, #A7C4BC 50%, #F4F1DE 100%);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   /* Better emoji rendering for Safari, Chrome, and Edge */
@@ -23,57 +26,24 @@
   }
 }
 
-/* Retro animations */
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
+/* Retro animations - wrapped in prefers-reduced-motion for accessibility */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
   }
-  100% {
-    transform: translateX(100%);
-  }
-}
 
-@keyframes bounce-in {
-  0% {
-    transform: scale(0.3);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  70% {
-    transform: scale(0.9);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes wiggle {
-  0%, 100% {
-    transform: rotate(-3deg);
-  }
-  50% {
-    transform: rotate(3deg);
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes pulse-warm {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(231, 111, 81, 0.7);
-  }
-  50% {
-    box-shadow: 0 0 0 10px rgba(231, 111, 81, 0);
+  @keyframes pulse-warm {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(231, 111, 81, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 0 5px rgba(231, 111, 81, 0);
+    }
   }
 }
 
@@ -143,10 +113,22 @@
 }
 
 .retro-card:hover {
-  transform: translateY(-5px) rotate(-1deg);
+  transform: translateY(-5px);
   box-shadow:
     12px 12px 0 rgba(42, 157, 143, 0.3),
     0 15px 40px rgba(38, 70, 83, 0.25);
+}
+
+/* Disable transforms and transitions for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .retro-card:hover {
+    transform: none;
+  }
+
+  .retro-button:hover,
+  .retro-button:active {
+    transform: none;
+  }
 }
 
 /* Mid-Century text shadow */
@@ -168,22 +150,13 @@
   pointer-events: none;
 }
 
-.animate-shimmer {
-  animation: shimmer 2s infinite;
-}
+/* Animation classes - only active when reduced motion is not preferred */
+@media (prefers-reduced-motion: no-preference) {
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
 
-.animate-bounce-in {
-  animation: bounce-in 0.6s ease-out;
-}
-
-.animate-wiggle {
-  animation: wiggle 1s ease-in-out infinite;
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-.animate-pulse-warm {
-  animation: pulse-warm 2s ease-in-out infinite;
+  .animate-pulse-warm {
+    animation: pulse-warm 3s ease-in-out infinite;
+  }
 }

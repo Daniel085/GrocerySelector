@@ -36,15 +36,44 @@ function App() {
   // Initialize Stable Diffusion when enabled
   useEffect(() => {
     if (enableImages && !sdState.isInitialized && !sdState.isLoading && engine) {
+      console.log('[App] Initializing Stable Diffusion...');
       sdState.initialize();
     }
-  }, [enableImages, sdState, engine]);
+  }, [enableImages, sdState.isInitialized, sdState.isLoading, sdState.initialize, engine]);
 
   const generateImagesForMeals = async (meals: MealPlan) => {
-    console.log('[ImageGeneration] Starting image generation, enabled:', enableImages, 'initialized:', sdState.isInitialized);
+    console.log('[ImageGeneration] Starting image generation, enabled:', enableImages, 'initialized:', sdState.isInitialized, 'loading:', sdState.isLoading);
 
-    if (!enableImages || !sdState.isInitialized) {
-      console.log('[ImageGeneration] Skipping image generation');
+    if (!enableImages) {
+      console.log('[ImageGeneration] Images not enabled, skipping');
+      return meals;
+    }
+
+    // Wait for Stable Diffusion to initialize if it's currently loading
+    if (sdState.isLoading) {
+      console.log('[ImageGeneration] Stable Diffusion is loading, waiting...');
+      setGenerationStep('⏳ Waiting for Stable Diffusion to finish loading...');
+
+      // Poll until initialized or timeout after 60 seconds
+      const maxWaitTime = 60000; // 60 seconds
+      const startTime = Date.now();
+
+      while (!sdState.isInitialized && Date.now() - startTime < maxWaitTime) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        console.log('[ImageGeneration] Still waiting for SD initialization...');
+      }
+
+      if (!sdState.isInitialized) {
+        console.error('[ImageGeneration] Stable Diffusion initialization timeout');
+        setGenerationStep('');
+        return meals;
+      }
+
+      console.log('[ImageGeneration] Stable Diffusion initialization complete!');
+    }
+
+    if (!sdState.isInitialized) {
+      console.log('[ImageGeneration] Stable Diffusion not initialized, skipping image generation');
       return meals;
     }
 

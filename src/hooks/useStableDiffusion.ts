@@ -18,17 +18,24 @@ export function useStableDiffusion() {
   const pipelineRef = useRef<any>(null);
 
   const initialize = useCallback(async () => {
-    if (pipelineRef.current) return;
+    if (pipelineRef.current) {
+      console.log('[StableDiffusion] Already initialized, skipping');
+      return;
+    }
 
+    console.log('[StableDiffusion] Starting initialization...');
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
       // Dynamic import to avoid loading on initial page load
+      console.log('[StableDiffusion] Importing transformers library...');
       const { pipeline } = await import('@huggingface/transformers');
+      console.log('[StableDiffusion] Transformers library loaded successfully');
 
       // Use SDXL-Turbo for faster generation (1-4 steps)
       // This model is optimized for speed and works well in browsers
       setState(prev => ({ ...prev, progress: 'Loading Stable Diffusion model...' }));
+      console.log('[StableDiffusion] Creating pipeline for model: Xenova/sd-turbo');
 
       const pipe = await pipeline(
         'text-to-image' as any, // Type assertion needed as text-to-image is not in standard pipeline types yet
@@ -37,16 +44,24 @@ export function useStableDiffusion() {
           progress_callback: (progress: any) => {
             if (progress.status === 'downloading') {
               const percent = progress.progress?.toFixed(0) || 0;
+              console.log(`[StableDiffusion] Download progress: ${percent}%`);
               setState(prev => ({
                 ...prev,
                 progress: `Downloading model: ${percent}%`,
               }));
+            } else if (progress.status === 'initiate') {
+              console.log('[StableDiffusion] Initiating download for:', progress.name);
+            } else if (progress.status === 'progress') {
+              console.log('[StableDiffusion] Loading progress:', progress);
+            } else if (progress.status === 'done') {
+              console.log('[StableDiffusion] Completed loading:', progress.name);
             }
           },
         }
       );
 
       pipelineRef.current = pipe;
+      console.log('[StableDiffusion] Pipeline created successfully!');
 
       setState(prev => ({
         ...prev,
@@ -54,7 +69,9 @@ export function useStableDiffusion() {
         isLoading: false,
         progress: 'Stable Diffusion ready!',
       }));
+      console.log('[StableDiffusion] Initialization complete, ready to generate images');
     } catch (error) {
+      console.error('[StableDiffusion] Initialization failed:', error);
       setState(prev => ({
         ...prev,
         isLoading: false,

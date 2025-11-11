@@ -79,13 +79,26 @@ Enable users to automatically add generated grocery lists to their Walmart cart 
 
 ### Recipe Images
 - ❌ **Not feasible with current browser libraries**
-- **Issue**: Transformers.js doesn't support text-to-image pipelines
-- **Attempted**: Stable Diffusion via Transformers.js (failed - unsupported pipeline type)
-- **Alternative options to explore**:
-  - Use Unsplash API for food photography placeholders
-  - Fallback to emoji or SVG illustrations
-  - Wait for WebGPU-based Stable Diffusion implementations
-  - Use external image generation API (requires backend)
+- **Issue**: No ready-to-use browser-based Stable Diffusion solutions exist
+
+**Attempted Solutions**:
+1. ✗ Transformers.js - Doesn't support text-to-image pipelines
+2. ✗ Foodish API - Returns random food images that don't match recipes
+3. ⏸️ MLC-AI web-stable-diffusion - Requires manual Python model conversion, no npm package
+
+**Why MLC-AI SD isn't practical**:
+- No pre-built models (unlike WebLLM)
+- Requires hours of setup: Python + TVM Unity + emscripten + Rust + wasm-pack
+- Manual model conversion and compilation needed
+- ~2GB additional download
+- 20-60 seconds per image generation
+- High GPU memory usage
+
+**Alternative options**:
+- Use Replicate API (~$0.001/image, requires backend/API key)
+- Use Unsplash API for generic food photography
+- Fallback to emoji or SVG illustrations
+- Wait for future WebGPU SD implementations with npm packages
 
 ### User Preferences
 - Dietary restrictions (vegetarian, vegan, gluten-free, etc.)

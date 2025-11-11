@@ -3,6 +3,7 @@ export interface Meal {
   name: string;
   ingredients: string[];
   instructions: string;
+  imageUrl?: string; // Generated recipe image
 }
 
 export interface MealPlan {

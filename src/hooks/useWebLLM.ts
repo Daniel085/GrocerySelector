@@ -21,13 +21,20 @@ export function useWebLLM() {
   useEffect(() => {
     // Check for WebGPU support
     const checkWebGPU = async () => {
-      if ('gpu' in navigator) {
-        try {
-          const adapter = await (navigator as any).gpu.requestAdapter();
-          setState(prev => ({ ...prev, hasWebGPU: !!adapter }));
-        } catch {
+      try {
+        if ('gpu' in navigator) {
+          try {
+            const adapter = await (navigator as any).gpu.requestAdapter();
+            setState(prev => ({ ...prev, hasWebGPU: !!adapter }));
+          } catch {
+            setState(prev => ({ ...prev, hasWebGPU: false }));
+          }
+        } else {
           setState(prev => ({ ...prev, hasWebGPU: false }));
         }
+      } catch (error) {
+        console.error('WebGPU check failed:', error);
+        setState(prev => ({ ...prev, hasWebGPU: false }));
       }
     };
     checkWebGPU();
@@ -40,9 +47,9 @@ export function useWebLLM() {
 
     try {
       const engine = await webllm.CreateMLCEngine(
-        // Use Phi-2 for good balance of quality and speed
+        // Use Phi-3-mini for good balance of quality and speed
         // Falls back to CPU/WASM if WebGPU unavailable
-        'Phi-2-q4f16_1-MLC',
+        'Phi-3-mini-4k-instruct-q4f16_1-MLC',
         {
           initProgressCallback: (progress) => {
             setState(prev => ({ ...prev, progress: progress.text }));

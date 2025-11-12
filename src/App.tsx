@@ -8,7 +8,7 @@ import { generateMealPlanPrompt } from './utils/prompts';
 import { parseMealPlan, generateGroceryList, exportGroceryListAsText } from './utils/mealParser';
 
 function App() {
-  const { engine, isLoading, error, progress, hasWebGPU, initialize, generate } = useWebLLM();
+  const { engine, isLoading, error, progress, hasWebGPU, deviceTier, deviceName, initialize, generate } = useWebLLM();
   const sdState = useStableDiffusion();
   const [selectedTheme, setSelectedTheme] = useState<CuisineTheme | null>(null);
   const [mealPlan, setMealPlan] = useState<MealPlan | null>(null);
@@ -181,7 +181,8 @@ function App() {
           </p>
           {browserInfo && (
             <p className="text-base text-[#8C8279] mt-4" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
-              Running on: <span className="font-medium text-[#264653]">{browserInfo}</span>
+              Running on: <span className="font-medium text-[#264653]">{deviceName}</span>
+              {deviceTier === 'tier1' && <span className="text-[#2A9D8F] font-semibold"> (Mobile - Optimized model)</span>}
               <span className="mx-2">•</span>
               All processing happens locally in your browser
             </p>
@@ -208,11 +209,22 @@ function App() {
                   )}
                 </p>
                 <p className="text-base text-[#8C8279] mb-2" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
-                  First-time setup: ~2GB Phi-3-mini model download (cached after first use)
+                  First-time setup: {deviceTier === 'tier1' ? '~1.8GB Phi-3.5-mini model' : '~2GB Phi-3-mini model'} download (cached after first use)
                 </p>
                 <p className="text-sm text-[#264653] mb-4" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
                   💡 Demo Mode: Watch the AI work in real-time with detailed progress messages
                 </p>
+                {deviceTier === 'unsupported' && (
+                  <div className="mb-4 p-4 bg-[#E76F51] rounded-xl border-3 border-[#DB6B4B]">
+                    <p className="text-base text-white font-semibold mb-2" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
+                      ⚠️ Device Not Supported
+                    </p>
+                    <p className="text-sm text-white" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
+                      {error || 'This app requires an iPhone 15 Pro or newer, or a desktop/laptop computer with WebGPU support to run AI locally in your browser.'}
+                    </p>
+                  </div>
+                )}
+                {deviceTier === 'desktop' && (
                 <label className="flex items-center space-x-3 cursor-pointer">
                   <input
                     type="checkbox"
@@ -224,21 +236,29 @@ function App() {
                     Enable AI-generated recipe images (experimental, +500MB download)
                   </span>
                 </label>
+                )}
+                {deviceTier === 'tier1' && (
+                  <p className="text-sm text-[#2A9D8F] font-semibold mb-2" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
+                    📱 Mobile Mode: Image generation disabled to preserve battery and memory
+                  </p>
+                )}
               </div>
               <button
                 onClick={initialize}
-                disabled={isLoading}
+                disabled={isLoading || deviceTier === 'unsupported'}
                 className="retro-button bg-gradient-to-b from-[#E76F51] to-[#DB6B4B] text-white px-10 py-4 rounded-full text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{fontFamily: "'Impact', 'Bebas Neue', sans-serif"}}
               >
-                {isLoading ? 'Loading Model...' : 'Initialize AI'}
+                {isLoading ? 'Loading Model...' : deviceTier === 'unsupported' ? 'Device Not Supported' : 'Initialize AI'}
               </button>
             </div>
             {isLoading && (
               <div className="mt-4 p-4 bg-[#A7C4BC] rounded-xl border-3 border-[#2A9D8F]">
                 <ProgressBar progress={progress} />
                 <p className="text-sm text-[#264653] mt-3 font-semibold" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
-                  📥 Downloading Phi-3-mini language model (3.8B parameters) - This happens once and is cached
+                  📥 {deviceTier === 'tier1'
+                    ? 'Downloading Phi-3.5-mini language model (1.8GB, optimized for mobile) - This happens once and is cached'
+                    : 'Downloading Phi-3-mini language model (3.8B parameters) - This happens once and is cached'}
                 </p>
               </div>
             )}

@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import * as webllm from '@mlc-ai/web-llm';
+import { detectDeviceCapabilities } from '../utils/deviceDetection';
 
 interface WebLLMState {
   engine: webllm.MLCEngine | null;
@@ -7,15 +8,22 @@ interface WebLLMState {
   error: string | null;
   progress: string;
   hasWebGPU: boolean;
+  deviceTier: 'desktop' | 'tier1' | 'unsupported';
+  deviceName: string;
 }
 
 export function useWebLLM() {
+  // Detect device capabilities once
+  const deviceCapabilities = detectDeviceCapabilities();
+
   const [state, setState] = useState<WebLLMState>({
     engine: null,
     isLoading: false,
     error: null,
     progress: '',
     hasWebGPU: false,
+    deviceTier: deviceCapabilities.tier,
+    deviceName: deviceCapabilities.deviceName,
   });
 
   useEffect(() => {
@@ -43,13 +51,24 @@ export function useWebLLM() {
   const initialize = useCallback(async () => {
     if (state.engine) return;
 
+    // Don't allow initialization on unsupported devices
+    if (deviceCapabilities.tier === 'unsupported') {
+      setState(prev => ({
+        ...prev,
+        error: deviceCapabilities.errorMessage || 'Device not supported',
+      }));
+      return;
+    }
+
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
+      // Select model based on device tier
+      const modelId = deviceCapabilities.recommendedModel;
+      console.log(`[WebLLM] Loading model for ${deviceCapabilities.tier}: ${modelId}`);
+
       const engine = await webllm.CreateMLCEngine(
-        // Use Phi-3-mini for good balance of quality and speed
-        // Falls back to CPU/WASM if WebGPU unavailable
-        'Phi-3-mini-4k-instruct-q4f16_1-MLC',
+        modelId,
         {
           initProgressCallback: (progress) => {
             setState(prev => ({ ...prev, progress: progress.text }));
@@ -61,7 +80,7 @@ export function useWebLLM() {
         ...prev,
         engine,
         isLoading: false,
-        progress: 'Model loaded successfully!',
+        progress: `Model loaded successfully! (${deviceCapabilities.deviceName})`,
       }));
     } catch (error) {
       setState(prev => ({
@@ -70,7 +89,7 @@ export function useWebLLM() {
         error: error instanceof Error ? error.message : 'Failed to load model',
       }));
     }
-  }, [state.engine]);
+  }, [state.engine, deviceCapabilities]);
 
   const generate = useCallback(
     async (prompt: string): Promise<string> => {

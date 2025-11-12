@@ -1,5 +1,66 @@
 import type { MealPlan, Meal, GroceryItem } from '../types';
 
+/**
+ * Validate meal plan for quality issues
+ * Returns validation errors or null if valid
+ */
+function validateMealPlan(plan: MealPlan): string[] {
+  const errors: string[] = [];
+
+  // Rule 1: Must have exactly 5 meals
+  if (plan.meals.length !== 5) {
+    errors.push(`Expected 5 meals, got ${plan.meals.length}`);
+  }
+
+  // Rule 2: Check for duplicate meal names (case-insensitive)
+  const names = plan.meals.map(m => m.name.toLowerCase().trim());
+  const duplicates = names.filter((name, index) => names.indexOf(name) !== index);
+  if (duplicates.length > 0) {
+    const uniqueDupes = [...new Set(duplicates)];
+    errors.push(`Duplicate meals found: ${uniqueDupes.join(', ')}`);
+  }
+
+  // Rule 3: Check for similar meal names (e.g., "Chicken Tacos" vs "Beef Tacos")
+  for (let i = 0; i < plan.meals.length; i++) {
+    for (let j = i + 1; j < plan.meals.length; j++) {
+      const name1 = plan.meals[i].name.toLowerCase();
+      const name2 = plan.meals[j].name.toLowerCase();
+
+      // Check if meals share the same main dish type
+      const dishTypes = ['tacos', 'pasta', 'curry', 'stir fry', 'soup', 'salad', 'pizza', 'rice bowl'];
+      for (const dish of dishTypes) {
+        if (name1.includes(dish) && name2.includes(dish)) {
+          errors.push(`Meals too similar: "${plan.meals[i].name}" and "${plan.meals[j].name}"`);
+          break;
+        }
+      }
+    }
+  }
+
+  // Rule 4: Each meal must have minimum ingredients
+  plan.meals.forEach(meal => {
+    if (meal.ingredients.length < 3) {
+      errors.push(`Day ${meal.day} "${meal.name}" has only ${meal.ingredients.length} ingredients (minimum 3)`);
+    }
+  });
+
+  // Rule 5: Each meal must have instructions
+  plan.meals.forEach(meal => {
+    if (!meal.instructions || meal.instructions.trim().length < 20) {
+      errors.push(`Day ${meal.day} "${meal.name}" has insufficient cooking instructions`);
+    }
+  });
+
+  // Rule 6: Check for empty meal names
+  plan.meals.forEach(meal => {
+    if (!meal.name || meal.name.trim().length === 0) {
+      errors.push(`Day ${meal.day} has an empty meal name`);
+    }
+  });
+
+  return errors;
+}
+
 export function parseMealPlan(text: string, theme: string): MealPlan | null {
   try {
     // Try to extract JSON if the model returns it
@@ -38,7 +99,26 @@ export function parseMealPlan(text: string, theme: string): MealPlan | null {
       }
     }
 
-    return meals.length > 0 ? { theme, meals } : null;
+    if (meals.length === 0) {
+      return null;
+    }
+
+    const plan = { theme, meals };
+
+    // Validate the meal plan
+    const validationErrors = validateMealPlan(plan);
+    if (validationErrors.length > 0) {
+      console.warn('[MealParser] Validation errors found:');
+      validationErrors.forEach((error, i) => {
+        console.warn(`  ${i + 1}. ${error}`);
+      });
+      // Still return the plan but log the issues
+      // In production, you might want to reject invalid plans
+    } else {
+      console.log('[MealParser] ✓ Meal plan validation passed');
+    }
+
+    return plan;
   } catch (error) {
     console.error('Failed to parse meal plan:', error);
     return null;

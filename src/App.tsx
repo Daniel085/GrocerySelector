@@ -28,23 +28,58 @@ function App() {
       setDebugLogs(prev => [...prev, `[${timestamp}] ${message}`].slice(-50)); // Keep last 50 logs
     };
 
+    const safeStringify = (obj: any): string => {
+      try {
+        if (obj === null || obj === undefined) return String(obj);
+        if (typeof obj !== 'object') return String(obj);
+
+        // Try regular stringify first
+        return JSON.stringify(obj, null, 2);
+      } catch (e) {
+        // Fallback for circular references or complex objects
+        try {
+          return JSON.stringify(obj, (_key, value) => {
+            if (typeof value === 'object' && value !== null) {
+              // Simple object representation
+              return `[Object: ${Object.keys(value).slice(0, 5).join(', ')}${Object.keys(value).length > 5 ? '...' : ''}]`;
+            }
+            return value;
+          });
+        } catch {
+          return `[Object: ${typeof obj}]`;
+        }
+      }
+    };
+
     const originalLog = console.log;
     const originalError = console.error;
     const originalWarn = console.warn;
 
     console.log = (...args: any[]) => {
       originalLog(...args);
-      addDebugLog('LOG: ' + args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
+      try {
+        addDebugLog('LOG: ' + args.map(a => typeof a === 'object' ? safeStringify(a) : String(a)).join(' '));
+      } catch (e) {
+        addDebugLog('LOG: [Failed to serialize log message]');
+      }
     };
 
     console.error = (...args: any[]) => {
       originalError(...args);
-      addDebugLog('ERROR: ' + args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
+      try {
+        addDebugLog('ERROR: ' + args.map(a => typeof a === 'object' ? safeStringify(a) : String(a)).join(' '));
+      } catch (e) {
+        addDebugLog('ERROR: [Failed to serialize error message]');
+      }
     };
 
     console.warn = (...args: any[]) => {
       originalWarn(...args);
-      addDebugLog('WARN: ' + args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
+      try {
+        addDebugLog('WARN: ' + args.map(a => typeof a === 'object' ? safeStringify(a) : String(a)).join(' '));
+      } catch (e) {
+        addDebugLog('WARN: [Failed to serialize warning message]');
+      }
     };
 
     // Initial log

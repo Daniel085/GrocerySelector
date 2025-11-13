@@ -19,6 +19,46 @@ function App() {
   const [generatingImages, setGeneratingImages] = useState(false);
   const [generationStep, setGenerationStep] = useState<string>('');
   const [browserInfo, setBrowserInfo] = useState<string>('');
+  const [debugLogs, setDebugLogs] = useState<string[]>([]);
+
+  // Intercept console logs for on-screen debugging
+  useEffect(() => {
+    const addDebugLog = (message: string) => {
+      const timestamp = new Date().toLocaleTimeString();
+      setDebugLogs(prev => [...prev, `[${timestamp}] ${message}`].slice(-50)); // Keep last 50 logs
+    };
+
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+
+    console.log = (...args: any[]) => {
+      originalLog(...args);
+      addDebugLog('LOG: ' + args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
+    };
+
+    console.error = (...args: any[]) => {
+      originalError(...args);
+      addDebugLog('ERROR: ' + args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
+    };
+
+    console.warn = (...args: any[]) => {
+      originalWarn(...args);
+      addDebugLog('WARN: ' + args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
+    };
+
+    // Initial log
+    addDebugLog('Debug console initialized');
+    addDebugLog(`User Agent: ${navigator.userAgent}`);
+    addDebugLog(`Screen: ${window.screen.width}x${window.screen.height} @${window.devicePixelRatio}x`);
+    addDebugLog(`WebGPU available: ${'gpu' in navigator}`);
+
+    return () => {
+      console.log = originalLog;
+      console.error = originalError;
+      console.warn = originalWarn;
+    };
+  }, []);
 
   // Detect browser and capabilities
   useEffect(() => {
@@ -496,6 +536,35 @@ function App() {
               </div>
             </div>
           </>
+        )}
+
+        {/* Debug Console */}
+        {debugLogs.length > 0 && (
+          <div className="retro-card p-6 mb-8 relative overflow-hidden">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-[#264653]" style={{fontFamily: "'Rockwell', 'Clarendon', serif"}}>
+                🔍 Debug Console
+              </h2>
+              <button
+                onClick={() => setDebugLogs([])}
+                className="px-4 py-2 bg-[#E76F51] text-white rounded-lg text-sm font-semibold hover:bg-[#DB6B4B]"
+              >
+                Clear Logs
+              </button>
+            </div>
+            <div className="bg-[#264653] text-[#F4F1DE] p-4 rounded-xl font-mono text-xs overflow-auto max-h-96 space-y-1">
+              {debugLogs.map((log, idx) => (
+                <div key={idx} className={`${
+                  log.includes('ERROR:') ? 'text-[#E76F51] font-bold' :
+                  log.includes('WARN:') ? 'text-[#E9C46A]' :
+                  log.includes('[WebLLM]') ? 'text-[#2A9D8F]' :
+                  'text-[#F4F1DE]'
+                }`}>
+                  {log}
+                </div>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* Footer */}

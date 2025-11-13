@@ -65,17 +65,27 @@ export function useWebLLM() {
     try {
       // Select model based on device tier
       const modelId = deviceCapabilities.recommendedModel;
-      console.log(`[WebLLM] Loading model for ${deviceCapabilities.tier}: ${modelId}`);
+      console.log(`[WebLLM] Device detected:`, {
+        tier: deviceCapabilities.tier,
+        deviceName: deviceCapabilities.deviceName,
+        modelId,
+        hasWebGPU: state.hasWebGPU,
+        userAgent: navigator.userAgent,
+        screenSize: `${window.screen.width}x${window.screen.height}`,
+        pixelRatio: window.devicePixelRatio
+      });
 
       const engine = await webllm.CreateMLCEngine(
         modelId,
         {
           initProgressCallback: (progress) => {
+            console.log(`[WebLLM] Init progress:`, progress);
             setState(prev => ({ ...prev, progress: progress.text }));
           },
         }
       );
 
+      console.log(`[WebLLM] Model loaded successfully!`);
       setState(prev => ({
         ...prev,
         engine,
@@ -83,10 +93,18 @@ export function useWebLLM() {
         progress: `Model loaded successfully! (${deviceCapabilities.deviceName})`,
       }));
     } catch (error) {
+      console.error(`[WebLLM] Model initialization failed:`, error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load model';
+      console.error(`[WebLLM] Error details:`, {
+        message: errorMessage,
+        stack: error instanceof Error ? error.stack : undefined,
+        deviceTier: deviceCapabilities.tier,
+        modelId: deviceCapabilities.recommendedModel
+      });
       setState(prev => ({
         ...prev,
         isLoading: false,
-        error: error instanceof Error ? error.message : 'Failed to load model',
+        error: `${errorMessage} (Device: ${deviceCapabilities.deviceName})`,
       }));
     }
   }, [state.engine, deviceCapabilities]);

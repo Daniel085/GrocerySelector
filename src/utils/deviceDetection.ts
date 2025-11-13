@@ -104,13 +104,14 @@ export function detectDeviceCapabilities(): DeviceCapabilities {
 
   const iPhoneModel = detectiPhoneModel();
 
-  // iPhone 15 Pro+ (Tier 1) - supported with lighter model
+  // iPhone 15 Pro+ (Tier 1) - use same model as desktop
+  // Note: iPhone 15 Pro has 8GB RAM which should handle Phi-3-mini
   if (isTier1iPhone()) {
     return {
       isSupported: true,
       tier: 'tier1',
       deviceName: iPhoneModel || 'iPhone 15 Pro+',
-      recommendedModel: 'Phi-3.5-mini-instruct-q4f16_1-MLC' // 1.8GB
+      recommendedModel: 'Phi-3-mini-4k-instruct-q4f16_1-MLC' // Same as desktop for now
     };
   }
 

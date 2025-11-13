@@ -209,7 +209,8 @@ function App() {
                   )}
                 </p>
                 <p className="text-base text-[#8C8279] mb-2" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
-                  First-time setup: {deviceTier === 'tier1' ? '~1.8GB Phi-3.5-mini model' : '~2GB Phi-3-mini model'} download (cached after first use)
+                  First-time setup: ~3.7GB Phi-3-mini model download (cached after first use)
+                  {deviceTier === 'tier1' && <span className="block text-sm text-[#2A9D8F] mt-1">⚠️ Large download on mobile - WiFi recommended</span>}
                 </p>
                 <p className="text-sm text-[#264653] mb-4" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
                   💡 Demo Mode: Watch the AI work in real-time with detailed progress messages
@@ -256,9 +257,8 @@ function App() {
               <div className="mt-4 p-4 bg-[#A7C4BC] rounded-xl border-3 border-[#2A9D8F]">
                 <ProgressBar progress={progress} />
                 <p className="text-sm text-[#264653] mt-3 font-semibold" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
-                  📥 {deviceTier === 'tier1'
-                    ? 'Downloading Phi-3.5-mini language model (1.8GB, optimized for mobile) - This happens once and is cached'
-                    : 'Downloading Phi-3-mini language model (3.8B parameters) - This happens once and is cached'}
+                  📥 Downloading Phi-3-mini language model (3.8B parameters, ~3.7GB) - This happens once and is cached
+                  {deviceTier === 'tier1' && <span className="block text-[#2A9D8F] mt-1">Mobile: This may take several minutes on cellular</span>}
                 </p>
               </div>
             )}

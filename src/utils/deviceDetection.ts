@@ -104,14 +104,14 @@ export function detectDeviceCapabilities(): DeviceCapabilities {
 
   const iPhoneModel = detectiPhoneModel();
 
-  // iPhone 15 Pro+ (Tier 1) - use same model as desktop
-  // Note: iPhone 15 Pro has 8GB RAM which should handle Phi-3-mini
+  // iPhone 15 Pro+ (Tier 1) - use smaller model due to GPU memory limits
+  // iPhone Safari limits GPU buffers to ~410MB, so we need SmolLM2-360M (376MB)
   if (isTier1iPhone()) {
     return {
       isSupported: true,
       tier: 'tier1',
       deviceName: iPhoneModel || 'iPhone 15 Pro+',
-      recommendedModel: 'Phi-3-mini-4k-instruct-q4f16_1-MLC' // Same as desktop for now
+      recommendedModel: 'SmolLM2-360M-Instruct-q4f16_1-MLC' // 376MB - fits in iOS GPU limits
     };
   }
 

@@ -257,7 +257,7 @@ function App() {
           {browserInfo && (
             <p className="text-base text-[#8C8279] mt-4" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
               Running on: <span className="font-medium text-[#264653]">{deviceName}</span>
-              {deviceTier === 'tier1' && <span className="text-[#2A9D8F] font-semibold"> (Mobile - Optimized model)</span>}
+              {deviceTier === 'tier1' && <span className="text-[#E9C46A] font-semibold"> (Mobile - Smaller model due to GPU limits)</span>}
               <span className="mx-2">•</span>
               All processing happens locally in your browser
             </p>
@@ -284,9 +284,16 @@ function App() {
                   )}
                 </p>
                 <p className="text-base text-[#8C8279] mb-2" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
-                  First-time setup: ~3.7GB Phi-3-mini model download (cached after first use)
-                  {deviceTier === 'tier1' && <span className="block text-sm text-[#2A9D8F] mt-1">⚠️ Large download on mobile - WiFi recommended</span>}
+                  First-time setup: {deviceTier === 'tier1' ? '~376MB SmolLM2-360M model' : '~3.7GB Phi-3-mini model'} download (cached after first use)
                 </p>
+                {deviceTier === 'tier1' && (
+                  <div className="mb-2 p-3 bg-[#E9C46A]/30 border-2 border-[#E9C46A] rounded-xl">
+                    <p className="text-sm text-[#264653] font-semibold" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
+                      📱 <strong>Mobile Note:</strong> Using smaller model due to iPhone GPU memory limits (410MB max).
+                      Meal quality may be lower than desktop. Consider using a computer for best results.
+                    </p>
+                  </div>
+                )}
                 <p className="text-sm text-[#264653] mb-4" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
                   💡 Demo Mode: Watch the AI work in real-time with detailed progress messages
                 </p>
@@ -332,8 +339,10 @@ function App() {
               <div className="mt-4 p-4 bg-[#A7C4BC] rounded-xl border-3 border-[#2A9D8F]">
                 <ProgressBar progress={progress} />
                 <p className="text-sm text-[#264653] mt-3 font-semibold" style={{fontFamily: "'Helvetica Neue', Arial, sans-serif"}}>
-                  📥 Downloading Phi-3-mini language model (3.8B parameters, ~3.7GB) - This happens once and is cached
-                  {deviceTier === 'tier1' && <span className="block text-[#2A9D8F] mt-1">Mobile: This may take several minutes on cellular</span>}
+                  📥 {deviceTier === 'tier1'
+                    ? 'Downloading SmolLM2-360M language model (360M parameters, ~376MB) - Optimized for mobile GPU limits'
+                    : 'Downloading Phi-3-mini language model (3.8B parameters, ~3.7GB)'
+                  } - This happens once and is cached
                 </p>
               </div>
             )}

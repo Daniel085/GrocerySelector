@@ -80,6 +80,7 @@ function extractFromJsonLd(html: string): Omit<ScrapedRecipe, 'url'> | null {
           // Check if this is a Recipe or within @graph
           const recipe = data['@type'] === 'Recipe'
             ? data
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             : data['@graph']?.find((item: any) => item['@type'] === 'Recipe');
 
           if (recipe) {
@@ -98,7 +99,7 @@ function extractFromJsonLd(html: string): Omit<ScrapedRecipe, 'url'> | null {
             };
           }
         }
-      } catch (e) {
+      } catch {
         // Skip invalid JSON blocks
         continue;
       }

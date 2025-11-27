@@ -86,7 +86,7 @@ export function RecipeInput({ onRecipeAdded }: RecipeInputProps) {
       setRecipeName('');
       setIngredientText('');
       setError(null);
-    } catch (err) {
+    } catch {
       setError('Failed to parse ingredients. Please check the format.');
     }
   };

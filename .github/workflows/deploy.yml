@@ -6,6 +6,7 @@ on:
       - main
       - claude/add-recipe-images-011CUziqD3anV7skaWtsoBmq
       - claude/modern-retro-design-011CUziqD3anV7skaWtsoBmq
+      - claude/recipe-shopping-list-01QuDubmY3sVJ7tGfmKc8B1k
   workflow_dispatch:
 
 permissions:

@@ -22,41 +22,65 @@ export interface ScrapedRecipe {
 
 /**
  * Fetch and parse recipe from URL
- * Uses a CORS proxy for browser-based scraping
+ * Uses multiple CORS proxy services for reliability
  */
 export async function scrapeRecipeFromUrl(url: string): Promise<ScrapedRecipe> {
-  try {
-    // For browser-based scraping, we need to handle CORS
-    // We'll use a proxy service or extract from the URL directly
+  // Try multiple CORS proxies for better reliability
+  const proxies = [
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  ];
 
-    // Option 1: Use allorigins.win as CORS proxy
-    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+  let lastError: Error | null = null;
 
-    const response = await fetch(proxyUrl);
+  for (const proxyUrl of proxies) {
+    try {
+      console.log(`[RecipeScraper] Trying to fetch from: ${proxyUrl.substring(0, 100)}...`);
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch recipe: ${response.statusText}`);
+      const response = await fetch(proxyUrl, {
+        headers: {
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const html = await response.text();
+      console.log(`[RecipeScraper] Fetched ${html.length} characters of HTML`);
+
+      // Try extracting from JSON-LD first (most reliable)
+      const jsonLdRecipe = extractFromJsonLd(html);
+      if (jsonLdRecipe) {
+        console.log('[RecipeScraper] Successfully extracted via JSON-LD');
+        return { ...jsonLdRecipe, url };
+      }
+
+      // Fallback to parsing HTML patterns
+      const htmlRecipe = extractFromHtml(html);
+      if (htmlRecipe) {
+        console.log('[RecipeScraper] Successfully extracted via HTML parsing');
+        return { ...htmlRecipe, url };
+      }
+
+      throw new Error('No recipe data found in response');
+    } catch (error) {
+      console.warn(`[RecipeScraper] Failed with proxy:`, error);
+      lastError = error instanceof Error ? error : new Error(String(error));
+      continue; // Try next proxy
     }
-
-    const html = await response.text();
-
-    // Try extracting from JSON-LD first (most reliable)
-    const jsonLdRecipe = extractFromJsonLd(html);
-    if (jsonLdRecipe) {
-      return { ...jsonLdRecipe, url };
-    }
-
-    // Fallback to parsing HTML patterns
-    const htmlRecipe = extractFromHtml(html);
-    if (htmlRecipe) {
-      return { ...htmlRecipe, url };
-    }
-
-    throw new Error('Could not extract recipe data from this URL');
-  } catch (error) {
-    console.error('Recipe scraping error:', error);
-    throw error;
   }
+
+  // All proxies failed
+  throw new Error(
+    `Could not fetch recipe. This may be due to:\n` +
+    `• The site blocking automated access\n` +
+    `• CORS restrictions\n` +
+    `• Invalid URL or missing recipe data\n\n` +
+    `Try using "Manual Entry" mode instead.\n\n` +
+    `Error: ${lastError?.message || 'Unknown error'}`
+  );
 }
 
 /**

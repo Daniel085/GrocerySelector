@@ -145,7 +145,7 @@ export function RecipeInput({ onRecipeAdded }: RecipeInputProps) {
 
           {error && (
             <div className="p-4 bg-red-100 rounded-xl border-3 border-red-400">
-              <p className="text-base text-red-900 font-semibold">{error}</p>
+              <p className="text-base text-red-900 font-semibold whitespace-pre-wrap">{error}</p>
             </div>
           )}
 
@@ -192,7 +192,7 @@ export function RecipeInput({ onRecipeAdded }: RecipeInputProps) {
 
           {error && (
             <div className="p-4 bg-red-100 rounded-xl border-3 border-red-400">
-              <p className="text-base text-red-900 font-semibold">{error}</p>
+              <p className="text-base text-red-900 font-semibold whitespace-pre-wrap">{error}</p>
             </div>
           )}
 

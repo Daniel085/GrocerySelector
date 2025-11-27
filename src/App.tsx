@@ -87,9 +87,9 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 py-8 px-4 retro-dots">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <header className="text-center mb-12 animate-bounce-in">
+        <header className="text-center mb-12">
           <h1 className="text-6xl md:text-7xl font-bold text-orange-900 mb-4 retro-text-shadow">
-            <span className="emoji animate-wiggle inline-block">🍽️</span> Grocery Selector
+            <span className="emoji inline-block">🍽️</span> Grocery Selector
           </h1>
           <p className="text-xl md:text-2xl text-orange-800 max-w-3xl mx-auto font-semibold">
             Smart recipe-based shopping lists with automatic ingredient combining

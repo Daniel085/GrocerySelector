@@ -17,6 +17,19 @@ export interface GroceryItem {
   usedInDays: number[];
 }
 
+// New types for URL-based recipe workflow
+export interface Recipe {
+  id: string;
+  name: string;
+  url?: string;
+  ingredients: string[];
+  servings?: number;
+  prepTime?: string;
+  cookTime?: string;
+  imageUrl?: string;
+  author?: string;
+}
+
 export const CUISINE_THEMES = [
   { id: 'italian', name: 'Italian', emoji: '🇮🇹' },
   { id: 'mexican', name: 'Mexican', emoji: '🇲🇽' },

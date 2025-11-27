@@ -93,24 +93,46 @@ function extractFromJsonLd(html: string): Omit<ScrapedRecipe, 'url'> | null {
     const jsonLdPattern = /<script[^>]+type=["']application\/ld\+json["'][^>]*>(.*?)<\/script>/gis;
     const matches = html.matchAll(jsonLdPattern);
 
+    let jsonBlockCount = 0;
     for (const match of matches) {
       try {
+        jsonBlockCount++;
         const jsonData = JSON.parse(match[1]);
+        console.log(`[RecipeScraper] JSON-LD block ${jsonBlockCount}:`, jsonData);
 
         // Handle both single objects and arrays
         const recipes = Array.isArray(jsonData) ? jsonData : [jsonData];
 
         for (const data of recipes) {
-          // Check if this is a Recipe or within @graph
-          const recipe = data['@type'] === 'Recipe'
-            ? data
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            : data['@graph']?.find((item: any) => item['@type'] === 'Recipe');
+          // Check if @type is Recipe (can be string or array)
+          const types = Array.isArray(data['@type']) ? data['@type'] : [data['@type']];
+          const isRecipe = types.includes('Recipe');
 
-          if (recipe) {
+          let recipe = null;
+
+          if (isRecipe) {
+            recipe = data;
+          } else if (data['@graph']) {
+            // Look for Recipe in @graph
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            recipe = data['@graph'].find((item: any) => {
+              const itemTypes = Array.isArray(item['@type']) ? item['@type'] : [item['@type']];
+              return itemTypes.includes('Recipe');
+            });
+          }
+
+          if (recipe && recipe.recipeIngredient) {
+            console.log('[RecipeScraper] Found recipe:', recipe.name);
+            console.log('[RecipeScraper] Ingredients count:', recipe.recipeIngredient?.length);
+
             const ingredients = Array.isArray(recipe.recipeIngredient)
               ? recipe.recipeIngredient.map((ing: string) => parseIngredient(ing))
               : [];
+
+            if (ingredients.length === 0) {
+              console.warn('[RecipeScraper] Recipe found but has no ingredients');
+              continue;
+            }
 
             return {
               name: recipe.name || 'Unnamed Recipe',
@@ -123,12 +145,13 @@ function extractFromJsonLd(html: string): Omit<ScrapedRecipe, 'url'> | null {
             };
           }
         }
-      } catch {
-        // Skip invalid JSON blocks
+      } catch (parseError) {
+        console.warn('[RecipeScraper] Failed to parse JSON-LD block:', parseError);
         continue;
       }
     }
 
+    console.warn(`[RecipeScraper] Checked ${jsonBlockCount} JSON-LD blocks, no recipe found`);
     return null;
   } catch (error) {
     console.error('JSON-LD parsing error:', error);
@@ -142,6 +165,8 @@ function extractFromJsonLd(html: string): Omit<ScrapedRecipe, 'url'> | null {
  */
 function extractFromHtml(html: string): Omit<ScrapedRecipe, 'url'> | null {
   try {
+    console.log('[RecipeScraper] Attempting HTML fallback parsing...');
+
     // Create a temporary DOM parser
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
@@ -159,6 +184,7 @@ function extractFromHtml(html: string): Omit<ScrapedRecipe, 'url'> | null {
       const element = doc.querySelector(selector);
       if (element?.textContent?.trim()) {
         name = element.textContent.trim();
+        console.log(`[RecipeScraper] Found recipe name via ${selector}:`, name);
         break;
       }
     }
@@ -170,11 +196,15 @@ function extractFromHtml(html: string): Omit<ScrapedRecipe, 'url'> | null {
       '.recipe-ingredient',
       'li[itemprop="ingredients"]',
       '.ingredients li',
+      'ul.ingredients li',
+      '.recipe-ingredients li',
     ];
 
     const ingredients: ParsedIngredient[] = [];
     for (const selector of ingredientSelectors) {
       const elements = doc.querySelectorAll(selector);
+      console.log(`[RecipeScraper] Selector ${selector} found ${elements.length} elements`);
+
       if (elements.length > 0) {
         elements.forEach(el => {
           const text = el.textContent?.trim();
@@ -182,11 +212,16 @@ function extractFromHtml(html: string): Omit<ScrapedRecipe, 'url'> | null {
             ingredients.push(parseIngredient(text));
           }
         });
-        break;
+
+        if (ingredients.length > 0) {
+          console.log(`[RecipeScraper] Extracted ${ingredients.length} ingredients via ${selector}`);
+          break;
+        }
       }
     }
 
     if (ingredients.length === 0) {
+      console.warn('[RecipeScraper] HTML fallback found no ingredients');
       return null;
     }
 

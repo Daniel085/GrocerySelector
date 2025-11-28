@@ -166,6 +166,12 @@ export function normalizeIngredientName(name: string): string {
  * - "1 large onion, diced"
  */
 export function parseIngredient(ingredientText: string): ParsedIngredient {
+  // Ensure we have a string (defensive programming)
+  if (typeof ingredientText !== 'string') {
+    console.error('[IngredientParser] Received non-string ingredient:', ingredientText);
+    ingredientText = String(ingredientText);
+  }
+
   const raw = ingredientText.trim();
 
   // Pattern: [quantity] [unit] [ingredient] [notes]

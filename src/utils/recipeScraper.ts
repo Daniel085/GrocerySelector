@@ -127,16 +127,22 @@ function extractFromJsonLd(html: string): Omit<ScrapedRecipe, 'url'> | null {
             console.log('[RecipeScraper] First ingredient sample:', recipe.recipeIngredient?.[0]);
 
             const ingredients = Array.isArray(recipe.recipeIngredient)
-              ? recipe.recipeIngredient.map((ing: string | { name?: string; text?: string }) => {
+              ? recipe.recipeIngredient.map((ing: unknown) => {
                   // Handle both string and object formats
                   if (typeof ing === 'string') {
                     return parseIngredient(ing);
-                  } else if (typeof ing === 'object') {
+                  } else if (typeof ing === 'object' && ing !== null) {
                     // Some sites use objects like { "@id": "...", "name": "2 cups flour" }
-                    const text = ing.name || ing.text || '';
-                    if (text) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const obj = ing as any;
+                    const text = obj.name || obj.text || '';
+
+                    // Ensure we only parse if text is actually a string
+                    if (typeof text === 'string' && text.trim()) {
                       return parseIngredient(text);
                     }
+
+                    console.warn('[RecipeScraper] Skipping ingredient with non-string value:', ing);
                   }
                   return null;
                 })

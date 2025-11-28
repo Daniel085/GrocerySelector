@@ -124,15 +124,31 @@ function extractFromJsonLd(html: string): Omit<ScrapedRecipe, 'url'> | null {
           if (recipe && recipe.recipeIngredient) {
             console.log('[RecipeScraper] Found recipe:', recipe.name);
             console.log('[RecipeScraper] Ingredients count:', recipe.recipeIngredient?.length);
+            console.log('[RecipeScraper] First ingredient sample:', recipe.recipeIngredient?.[0]);
 
             const ingredients = Array.isArray(recipe.recipeIngredient)
-              ? recipe.recipeIngredient.map((ing: string) => parseIngredient(ing))
+              ? recipe.recipeIngredient.map((ing: string | { name?: string; text?: string }) => {
+                  // Handle both string and object formats
+                  if (typeof ing === 'string') {
+                    return parseIngredient(ing);
+                  } else if (typeof ing === 'object') {
+                    // Some sites use objects like { "@id": "...", "name": "2 cups flour" }
+                    const text = ing.name || ing.text || '';
+                    if (text) {
+                      return parseIngredient(text);
+                    }
+                  }
+                  return null;
+                })
+                .filter((ing: ParsedIngredient | null): ing is ParsedIngredient => ing !== null)
               : [];
 
             if (ingredients.length === 0) {
-              console.warn('[RecipeScraper] Recipe found but has no ingredients');
+              console.warn('[RecipeScraper] Recipe found but has no valid ingredients');
               continue;
             }
+
+            console.log('[RecipeScraper] Successfully parsed', ingredients.length, 'ingredients');
 
             return {
               name: recipe.name || 'Unnamed Recipe',

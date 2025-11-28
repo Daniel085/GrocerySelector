@@ -172,7 +172,8 @@ export function parseIngredient(ingredientText: string): ParsedIngredient {
     ingredientText = String(ingredientText);
   }
 
-  const raw = ingredientText.trim();
+  // Explicitly ensure raw is a string
+  const raw = String(ingredientText).trim();
 
   // Pattern: [quantity] [unit] [ingredient] [notes]
   // Handles fractions like 1/2, 1 1/2, decimals like 1.5

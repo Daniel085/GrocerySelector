@@ -33,11 +33,28 @@ export function RecipeInput({ onRecipeAdded }: RecipeInputProps) {
     try {
       const scrapedRecipe = await scrapeRecipeFromUrl(recipeUrl);
 
+      // Ensure all ingredients are strings (defensive programming)
+      const ingredients = scrapedRecipe.ingredients
+        .map(ing => {
+          // Double-check that raw is actually a string
+          if (typeof ing.raw === 'string') {
+            return ing.raw;
+          }
+          // Fallback: convert to string if it's not
+          console.error('[RecipeInput] Ingredient raw is not a string:', ing);
+          return String(ing.raw);
+        })
+        .filter(ing => ing && ing !== '[object Object]'); // Filter out any that couldn't be converted
+
+      if (ingredients.length === 0) {
+        throw new Error('No valid ingredients found in recipe');
+      }
+
       const recipe: Recipe = {
         id: Date.now().toString(),
         name: scrapedRecipe.name,
         url: scrapedRecipe.url,
-        ingredients: scrapedRecipe.ingredients.map(ing => ing.raw),
+        ingredients,
         servings: scrapedRecipe.servings,
         prepTime: scrapedRecipe.prepTime,
         cookTime: scrapedRecipe.cookTime,
